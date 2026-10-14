@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f7f7f2">
+  <meta name="description" content="Discover complete Pokémon evolution families, one random roll at a time. Official artwork, every branch, all generations.">
+  <title>Evo Club — The Pokémon Evolution Randomizer</title>
+  <link rel="preconnect" href="https://raw.githubusercontent.com" crossorigin>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #1d2732;
+      --muted: #66727b;
+      --paper: #f7f7f2;
+      --white: #ffffff;
+      --border: #dfe5e3;
+      --orange: #f56b4e;
+      --mint: #c7f3ba;
+      --shadow: 0 18px 55px rgba(26, 47, 45, .07);
+      font-family: ui-rounded, "Avenir Next", Avenir, "Nunito Sans", "Trebuchet MS", system-ui, -apple-system, sans-serif;
+    }
+    *, *::before, *::after { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { margin: 0; background: var(--paper); color: var(--ink); min-width: 320px; }
+    button { font: inherit; cursor: pointer; }
+    button:focus-visible { outline: 3px solid #7163ee; outline-offset: 4px; }
+    a { color: inherit; }
+    .container { width: min(1136px, calc(100% - 46px)); margin-inline: auto; }
+    .site-header { display: flex; align-items: center; justify-content: space-between; padding-top: 29px; padding-bottom: 24px; gap: 16px; }
+    .brand { display: inline-flex; align-items: center; gap: 10px; text-decoration: none; font-size: 25px; font-weight: 1000; letter-spacing: -.095em; white-space: nowrap; }
+    .brand .brand-accent { color: var(--orange); }
+    .pokeball { position: relative; flex: none; height: 35px; width: 35px; border: 3px solid var(--ink); border-radius: 50%; overflow: hidden; background: linear-gradient(to bottom, var(--orange) 0 43%, var(--ink) 43% 57%, #fff 57% 100%); transform: rotate(-15deg); }
+    .pokeball::after { content: ""; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 13px; height: 13px; border: 3px solid var(--ink); border-radius: 50%; background: white; }
+    .top-status { display: inline-flex; align-items: center; gap: 9px; padding: 10px 15px; border: 1px solid #d7e2db; border-radius: 999px; font-weight: 800; font-size: 12px; color: #54655d; background: #fff; }
+    .status-dot { width: 8px; height: 8px; border-radius: 50%; background: #55bd78; box-shadow: 0 0 0 4px #e4f6e9; flex: none; }
+    .hero { display: grid; grid-template-columns: minmax(0, 1.24fr) minmax(300px, .76fr); align-items: stretch; gap: clamp(24px, 4.3vw, 68px); padding-block: 55px 88px; }
+    .hero-copy { align-self: center; }
+    .eyebrow { font-size: 11px; font-weight: 1000; letter-spacing: .17em; text-transform: uppercase; }
+    .small-burst { color: var(--orange); margin-right: 7px; font-size: 18px; vertical-align: -2px; }
+    h1 { margin: 23px 0 23px; font-size: clamp(56px, 6.2vw, 92px); font-weight: 1000; letter-spacing: -.09em; line-height: .965; }
+    h1 .highlight { color: #389d83; }
+    h1 .period { color: var(--orange); }
+    .hero-copy > p.description { color: var(--muted); max-width: 455px; font-size: clamp(15px, 1.6vw, 19px); line-height: 1.65; margin: 0; }
+    .hero-tags { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 29px; }
+    .hero-tag { font-size: 12px; font-weight: 850; color: #45554d; padding: 10px 12px; border-radius: 999px; background: #e8eee5; }
+    .hero-tag .check { color: #2c997a; margin-right: 5px; font-weight: 900; }
+    .action-card { position: relative; overflow: hidden; isolation: isolate; min-height: 360px; background: var(--mint); border: 2px solid var(--ink); border-radius: 30px; box-shadow: 9px 9px 0 var(--ink); padding: clamp(24px, 3vw, 38px); display: flex; align-items: stretch; }
+    .action-card::before { content: ""; position: absolute; width: 230px; height: 230px; border-radius: 50%; border: 28px solid rgba(29, 39, 50, .064); top: -76px; right: -77px; z-index: -1; }
+    .action-card::after { content: ""; position: absolute; width: 142px; height: 142px; border-radius: 50%; border: 23px solid rgba(29, 39, 50, .048); bottom: -65px; right: -42px; z-index: -1; }
+    .action-inner { width: 100%; display: flex; flex-direction: column; position: relative; }
+    .action-number { display: flex; justify-content: space-between; align-items: center; font-size: 11px; font-weight: 1000; letter-spacing: .13em; }
+    .action-number > span:last-child { font-size: 15px; letter-spacing: -.02em; }
+    .action-card h2 { font-size: clamp(55px, 5.4vw, 83px); letter-spacing: -.09em; line-height: .95; font-weight: 1000; margin: 49px 0 10px; }
+    .action-card .action-description { color: #3e5348; margin: 0 0 28px; font-size: 14px; font-weight: 700; }
+    .roll-button { width: 100%; min-height: 64px; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 0 18px 0 20px; background: var(--ink); border: 2px solid var(--ink); color: white; border-radius: 15px; font-weight: 950; font-size: 15px; box-shadow: 0 4px 0 rgba(29,39,50,.12); transition: transform .15s ease, box-shadow .15s ease, background .15s ease; }
+    .roll-button:hover { transform: translateY(-3px); box-shadow: 0 7px 0 rgba(29,39,50,.13); background: #303f4d; }
+    .roll-button:active { transform: translateY(2px); box-shadow: 0 1px 0 rgba(29,39,50,.13); }
+    .button-group { display: inline-flex; align-items: center; gap: 11px; }
+    .roll-button svg { display: block; width: 21px; height: 21px; stroke: currentColor; stroke-width: 2.4; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+    .button-arrow { background: rgba(255,255,255,.14); border-radius: 9px; height: 34px; width: 34px; display: grid; place-items: center; font-size: 21px; flex: none; }
+    .action-footer { margin-top: auto; display: flex; align-items: center; gap: 7px; padding-top: 19px; font-size: 11px; font-weight: 850; color: #53695c; }
+    .three-dots { display: inline-flex; gap: 4px; margin-right: 5px; }
+    .three-dots i { height: 6px; width: 6px; border-radius: 50%; background: #1d2732; opacity: .7; }
+    .three-dots i:nth-child(2) { opacity: .38; }
+    .three-dots i:nth-child(3) { opacity: .2; }
+    .results-section { scroll-margin-top: 22px; }
+    .results-title-row { display: flex; align-items: end; justify-content: space-between; gap: 20px; padding-bottom: 22px; flex-wrap: wrap; }
+    .section-kicker { display: flex; align-items: center; gap: 10px; text-transform: uppercase; font-size: 11px; font-weight: 1000; letter-spacing: .15em; color: #647570; }
+    .kicker-icon { display: grid; place-items: center; border-radius: 9px; background: #eee8ff; color: #8171cd; font-size: 16px; width: 28px; height: 28px; }
+    .results-title-row h2 { font-size: clamp(31px, 4.8vw, 51px); letter-spacing: -.07em; line-height: 1.02; margin: 13px 0 0; font-weight: 1000; }
+    .results-title-row h2 .faded { color: #8d9899; font-weight: 750; }
+    .facts { display: flex; flex-wrap: wrap; gap: 8px; padding-bottom: 3px; }
+    .fact { border: 1px solid #dfe5e3; background: white; color: #51615f; border-radius: 999px; padding: 10px 13px; font-size: 12px; font-weight: 850; white-space: nowrap; }
+    .fact strong { color: var(--ink); }
+    .frame { border: 1px solid var(--border); box-shadow: var(--shadow); border-radius: 27px; background: #fff; overflow: hidden; }
+    .frame-top { display: flex; align-items: center; gap: 9px; padding: 19px clamp(18px, 3vw, 34px); border-bottom: 1px solid #e9eeeb; font-size: 10px; letter-spacing: .17em; font-weight: 1000; color: #788681; }
+    .tiny-square { width: 11px; height: 11px; border: 2px solid var(--orange); border-radius: 3px; transform: rotate(10deg); }
+    .frame-top .stretch { flex: 1; }
+    .frame-top .frame-dex { letter-spacing: .07em; font-variant-numeric: tabular-nums; }
+    .track { padding: clamp(22px, 3.5vw, 41px); }
+    .track.linear { display: grid; grid-template-columns: repeat(var(--stages), minmax(0, 1fr)); column-gap: clamp(30px, 5vw, 66px); }
+    .stage-block { min-width: 0; position: relative; }
+    .stage-heading { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 0 1px 15px; }
+    .stage-name { font-size: 11px; letter-spacing: .12em; font-weight: 1000; text-transform: uppercase; color: #687776; }
+    .stage-count { color: #a1acab; font-size: 11px; font-weight: 850; }
+    .cards { display: grid; gap: 13px; }
+    .pokemon-card { background: var(--tile, #eef5fc); border: 1px solid rgba(30,60,58,.06); border-radius: 20px; overflow: hidden; min-width: 0; padding: 15px 15px 17px; transition: transform .2s ease; }
+    .pokemon-card:hover { transform: translateY(-4px); }
+    .artwork { display: grid; place-items: center; aspect-ratio: 1.1 / 1; position: relative; min-height: 0; }
+    .artwork::before { content: ""; position: absolute; width: 69%; aspect-ratio: 1; background: #fff; border-radius: 50%; opacity: .45; }
+    .artwork img { position: relative; display: block; width: 100%; height: 100%; max-height: 205px; object-fit: contain; filter: drop-shadow(0 9px 7px rgba(40,49,45,.12)); transition: transform .25s ease; }
+    .pokemon-card:hover img { transform: scale(1.05) rotate(-2deg); }
+    .artwork.no-art::after { content: "?"; position: absolute; font-size: 58px; font-weight: 1000; color: #a5b4ae; }
+    .pokemon-copy { padding: 9px 4px 0; min-width: 0; }
+    .dex { font-size: 10px; font-weight: 1000; letter-spacing: .13em; color: #71817e; }
+    .pokemon-copy h3 { font-weight: 1000; font-size: clamp(19px, 2.1vw, 25px); letter-spacing: -.057em; line-height: 1.15; margin: 6px 0 0; overflow-wrap: anywhere; }
+    .parent-note { display: inline-block; color: #59706d; font-size: 11px; font-weight: 800; margin-top: 8px; }
+    .linear .stage-block:not(:last-child)::after { content: "→"; font-size: 31px; font-weight: 700; color: #98aaa6; position: absolute; top: 47%; right: calc(clamp(30px, 5vw, 66px) / -1 - 13px); transform: translateY(-50%); }
+    .track.branching { display: flex; flex-direction: column; gap: 47px; }
+    .track.branching .stage-heading { max-width: 880px; margin: auto; }
+    .track.branching .cards { grid-template-columns: repeat(auto-fit, minmax(170px, 218px)); justify-content: center; max-width: 970px; margin: auto; }
+    .track.branching .cards.single-card { grid-template-columns: minmax(0, 240px); }
+    .track.branching .stage-block:not(:last-child)::after { content: "↓"; color: #93a7a1; font-size: 27px; position: absolute; bottom: -40px; left: 50%; transform: translateX(-50%); font-weight: 900; }
+    .track.branching .artwork img { max-height: 165px; }
+    .track.branching .pokemon-copy h3 { font-size: 19px; }
+    .frame-bottom { display: flex; align-items: center; justify-content: space-between; gap: 15px; border-top: 1px solid #e9eeeb; padding: 19px clamp(18px, 3vw, 34px); background: #fcfdfa; }
+    .family-note { font-size: 12px; font-weight: 700; color: #76837e; }
+    .again-button { border: 1.5px solid #22342b; background: white; border-radius: 11px; padding: 12px 15px; white-space: nowrap; font-size: 12px; font-weight: 1000; color: #283a32; transition: background .18s ease, transform .18s ease; }
+    .again-button:hover { background: #eaf6e8; transform: translateY(-2px); }
+    .footer { padding-top: 48px; padding-bottom: 35px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; color: #798681; font-weight: 650; font-size: 11px; line-height: 1.6; }
+    .footer a { color: #5a7673; text-underline-offset: 3px; }
+    .reveal { animation: rise-in .45s cubic-bezier(.2,.8,.3,1) both; }
+    @keyframes rise-in { from { opacity: .22; transform: translateY(11px); } to { opacity: 1; transform: translateY(0); } }
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; border: 0; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; }
+    @media (max-width: 890px) {
+      .hero { grid-template-columns: minmax(0,1fr) minmax(275px,.9fr); gap: 28px; padding-top: 35px; padding-bottom: 65px; }
+      h1 { font-size: clamp(53px, 6.9vw, 70px); }
+      .action-card { padding: 25px; }
+      .action-card h2 { font-size: 64px; }
+      .track.linear { column-gap: 32px; }
+      .linear .stage-block:not(:last-child)::after { right: -29px; }
+    }
+    @media (max-width: 680px) {
+      .container { width: min(100% - 32px, 530px); }
+      .site-header { padding-top: 20px; padding-bottom: 10px; }
+      .brand { font-size: 22px; }
+      .pokeball { width: 31px; height: 31px; }
+      .top-status { font-size: 10px; padding: 9px 11px; max-width: 51%; line-height: 1.2; }
+      .hero { display: flex; flex-direction: column; padding-top: 40px; padding-bottom: 68px; gap: 34px; }
+      h1 { font-size: clamp(54px, 13vw, 74px); margin: 18px 0 20px; }
+      .hero-copy > p.description { font-size: 15px; max-width: 390px; }
+      .hero-tags { margin-top: 19px; }
+      .hero-tag { padding: 8px 10px; font-size: 11px; }
+      .action-card { min-height: 280px; padding: 23px; box-shadow: 6px 6px 0 var(--ink); }
+      .action-card h2 { font-size: 61px; margin: 24px 0 5px; }
+      .action-description { margin-bottom: 20px !important; }
+      .roll-button { min-height: 61px; }
+      .results-title-row { padding-bottom: 18px; }
+      .results-title-row h2 { font-size: 38px; }
+      .facts { gap: 7px; }
+      .fact { font-size: 11px; padding: 9px 12px; }
+      .track.linear { display: flex; flex-direction: column; gap: 36px; }
+      .track.linear .stage-block:not(:last-child)::after { content: "↓"; top: auto; bottom: -33px; left: 50%; right: auto; transform: translateX(-50%); font-size: 22px; }
+      .track.linear .pokemon-card { display: grid; grid-template-columns: 125px minmax(0,1fr); min-height: 151px; align-items: center; gap: 13px; padding: 10px 16px 10px 10px; }
+      .track.linear .artwork { aspect-ratio: 1/1; }
+      .track.linear .artwork img { max-height: 130px; }
+      .track.linear .pokemon-copy { padding: 0; }
+      .track.linear .pokemon-copy h3 { font-size: 26px; }
+      .track.branching { gap: 43px; }
+      .track.branching .cards { grid-template-columns: repeat(2, minmax(0,1fr)); gap: 10px; }
+      .track.branching .cards.single-card { grid-template-columns: minmax(0, 210px); }
+      .track.branching .pokemon-card { padding: 10px; border-radius: 16px; }
+      .track.branching .artwork img { max-height: 145px; }
+      .track.branching .pokemon-copy h3 { font-size: 17px; }
+      .track.branching .parent-note { font-size: 10px; }
+      .frame-top { padding: 16px 20px; }
+      .frame-bottom { padding: 17px 20px; }
+      .family-note { max-width: 50%; font-size: 11px; }
+      .again-button { padding: 12px; }
+      .footer { padding-top: 33px; }
+    }
+    @media (max-width: 390px) {
+      .top-status { font-size: 9px; }
+      .track.linear .pokemon-card { grid-template-columns: 108px minmax(0,1fr); }
+      .track.linear .pokemon-copy h3 { font-size: 22px; }
+      .track.branching .pokemon-copy h3 { font-size: 15px; }
+      .track.branching .artwork img { max-height: 120px; }
+      .results-title-row h2 { font-size: 33px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after { animation-duration: .001ms !important; transition-duration: .001ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header container">
+    <a class="brand" href="#top" aria-label="Evo Club home"><span class="pokeball" aria-hidden="true"></span><span>evo<span class="brand-accent">club</span>.</span></a>
+    <div class="top-status"><span class="status-dot" aria-hidden="true"></span><span id="catalogStatus">Your Pokédex is loading</span></div>
+  </header>
+
+  <main id="top">
+    <section class="hero container" aria-label="Random Pokémon evolution explorer">
+      <div class="hero-copy">
+        <div class="eyebrow"><span class="small-burst" aria-hidden="true">✳</span> Your pocket evolution explorer</div>
+        <h1>The whole<br><span class="highlight">evolution</span><br>in one click<span class="period">.</span></h1>
+        <p class="description">Meet an entire Pokémon evolution family at random. Every stage, every branching path, and all the official artwork.</p>
+        <div class="hero-tags"><span class="hero-tag"><span class="check">✓</span> Every branch included</span><span class="hero-tag"><span class="check">✓</span> All generations</span></div>
+      </div>
+      <div class="action-card">
+        <div class="action-inner">
+          <div class="action-number"><span>THE EVOLUTION MACHINE</span><span>↗ 001</span></div>
+          <h2>Who's<br>next?</h2>
+          <p class="action-description">A new family is one tap away.</p>
+          <button class="roll-button" id="rollButton" type="button"><span class="button-group"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m18 14 4 4-4 4"/><path d="m18 2 4 4-4 4"/><path d="M2 18h2.7a5 5 0 0 0 3.5-1.5L15.8 8A5 5 0 0 1 19.3 6H22"/><path d="M2 6h2.7a5 5 0 0 1 3.5 1.5l1.7 1.8"/><path d="m14.5 15 1.3 1.5a5 5 0 0 0 3.5 1.5H22"/></svg> <span>Roll a random line</span></span><span class="button-arrow" aria-hidden="true">→</span></button>
+          <div class="action-footer"><span class="three-dots" aria-hidden="true"><i></i><i></i><i></i></span> Gotta see 'em all.</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="results-section container" id="results" aria-label="Current Pokémon evolution family">
+      <div class="results-title-row">
+        <div>
+          <div class="section-kicker"><span class="kicker-icon" aria-hidden="true">✳</span> Your latest discovery <span id="rollCount">/ 01</span></div>
+          <h2 id="familyTitle">Bulbasaur <span class="faded">family</span></h2>
+        </div>
+        <div class="facts"><span class="fact" id="countFact"><strong>3</strong> Pokémon</span><span class="fact" id="stagesFact"><strong>3</strong> stages</span><span class="fact" id="branchFact">Straight-line path</span></div>
+      </div>
+      <div class="frame">
+        <div class="frame-top"><span class="tiny-square" aria-hidden="true"></span> EVOLUTION MAP <span class="stretch"></span><span class="frame-dex" id="dexRange">DEX #0001 – #0003</span></div>
+        <div class="track linear" id="stageTrack" aria-label="Complete evolution family"></div>
+        <div class="frame-bottom"><div class="family-note" id="familyNote">Every stage, start to finish.</div><button class="again-button" id="againButton" type="button">↻ &nbsp; Roll another</button></div>
+      </div>
+      <p id="liveMessage" class="sr-only" aria-live="polite" aria-atomic="true"></p>
+    </section>
+  </main>
+
+  <footer class="footer container"><span>Made for curious trainers ✳ &nbsp; Unofficial fan project.</span><span>Artwork via <a href="https://github.com/PokeAPI/sprites" target="_blank" rel="noopener noreferrer">PokéAPI's GitHub</a> · Pokémon © Nintendo / Creatures / GAME FREAK</span></footer>
+
+  <script>
+    'use strict';
+    // Live Pokédex data: https://github.com/PokeAPI/pokeapi/tree/master/data/v2/csv
+    // Official artwork: https://github.com/PokeAPI/sprites/tree/master/sprites/pokemon/other/official-artwork
+    const SPECIES_CSV = 'https://raw.githubusercontent.com/PokeAPI/pokeapi/master/data/v2/csv/pokemon_species.csv';
+    const ART_ROOT = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/';
+    const ART_PATHS = ['other/official-artwork/', 'other/home/', ''];
+    const CACHE_KEY = 'evoclub-species-v1';
+    const NAME_OVERRIDES = {
+      'mr-mime': 'Mr. Mime', 'mime-jr': 'Mime Jr.', 'mr-rime': 'Mr. Rime',
+      'farfetchd': "Farfetch’d", 'sirfetchd': "Sirfetch’d", 'nidoran-f': 'Nidoran♀',
+      'nidoran-m': 'Nidoran♂', 'porygon-z': 'Porygon-Z', 'ho-oh': 'Ho-Oh',
+      'flabebe': 'Flabébé', 'type-null': 'Type: Null', 'jangmo-o': 'Jangmo-o',
+      'hakamo-o': 'Hakamo-o', 'kommo-o': 'Kommo-o', 'wo-chien': 'Wo-Chien',
+      'chien-pao': 'Chien-Pao', 'ting-lu': 'Ting-Lu', 'chi-yu': 'Chi-Yu'
+    };
+    const TILE_COLORS = ['#e9f4ea', '#edf0ff', '#fff0e1', '#f7eafd', '#dff3f3', '#ffeaf0'];
+
+    // Instant no-network fallback; the complete, current species CSV replaces this when available.
+    // Entries are [National Dex ID, species name, evolves-from ID (if any)].
+    const STARTER_LINES = [
+      [[1,'bulbasaur'],[2,'ivysaur',1],[3,'venusaur',2]],
+      [[4,'charmander'],[5,'charmeleon',4],[6,'charizard',5]],
+      [[7,'squirtle'],[8,'wartortle',7],[9,'blastoise',8]],
+      [[10,'caterpie'],[11,'metapod',10],[12,'butterfree',11]],
+      [[13,'weedle'],[14,'kakuna',13],[15,'beedrill',14]],
+      [[16,'pidgey'],[17,'pidgeotto',16],[18,'pidgeot',17]],
+      [[172,'pichu'],[25,'pikachu',172],[26,'raichu',25]],
+      [[173,'cleffa'],[35,'clefairy',173],[36,'clefable',35]],
+      [[37,'vulpix'],[38,'ninetales',37]],
+      [[43,'oddish'],[44,'gloom',43],[45,'vileplume',44],[182,'bellossom',44]],
+      [[60,'poliwag'],[61,'poliwhirl',60],[62,'poliwrath',61],[186,'politoed',61]],
+      [[63,'abra'],[64,'kadabra',63],[65,'alakazam',64]],
+      [[66,'machop'],[67,'machoke',66],[68,'machamp',67]],
+      [[74,'geodude'],[75,'graveler',74],[76,'golem',75]],
+      [[92,'gastly'],[93,'haunter',92],[94,'gengar',93]],
+      [[133,'eevee'],[134,'vaporeon',133],[135,'jolteon',133],[136,'flareon',133],[196,'espeon',133],[197,'umbreon',133],[470,'leafeon',133],[471,'glaceon',133],[700,'sylveon',133]],
+      [[147,'dratini'],[148,'dragonair',147],[149,'dragonite',148]],
+      [[152,'chikorita'],[153,'bayleef',152],[154,'meganium',153]],
+      [[155,'cyndaquil'],[156,'quilava',155],[157,'typhlosion',156]],
+      [[158,'totodile'],[159,'croconaw',158],[160,'feraligatr',159]],
+      [[175,'togepi'],[176,'togetic',175],[468,'togekiss',176]],
+      [[265,'wurmple'],[266,'silcoon',265],[267,'beautifly',266],[268,'cascoon',265],[269,'dustox',268]],
+      [[280,'ralts'],[281,'kirlia',280],[282,'gardevoir',281],[475,'gallade',281]],
+      [[328,'trapinch'],[329,'vibrava',328],[330,'flygon',329]],
+      [[371,'bagon'],[372,'shelgon',371],[373,'salamence',372]],
+      [[374,'beldum'],[375,'metang',374],[376,'metagross',375]],
+      [[387,'turtwig'],[388,'grotle',387],[389,'torterra',388]],
+      [[390,'chimchar'],[391,'monferno',390],[392,'infernape',391]],
+      [[393,'piplup'],[394,'prinplup',393],[395,'empoleon',394]],
+      [[443,'gible'],[444,'gabite',443],[445,'garchomp',444]],
+      [[447,'riolu'],[448,'lucario',447]],
+      [[495,'snivy'],[496,'servine',495],[497,'serperior',496]],
+      [[498,'tepig'],[499,'pignite',498],[500,'emboar',499]],
+      [[501,'oshawott'],[502,'dewott',501],[503,'samurott',502]],
+      [[551,'sandile'],[552,'krokorok',551],[553,'krookodile',552]],
+      [[607,'litwick'],[608,'lampent',607],[609,'chandelure',608]],
+      [[610,'axew'],[611,'fraxure',610],[612,'haxorus',611]],
+      [[633,'deino'],[634,'zweilous',633],[635,'hydreigon',634]],
+      [[650,'chespin'],[651,'quilladin',650],[652,'chesnaught',651]],
+      [[653,'fennekin'],[654,'braixen',653],[655,'delphox',654]],
+      [[656,'froakie'],[657,'frogadier',656],[658,'greninja',657]],
+      [[714,'noibat'],[715,'noivern',714]],
+      [[722,'rowlet'],[723,'dartrix',722],[724,'decidueye',723]],
+      [[725,'litten'],[726,'torracat',725],[727,'incineroar',726]],
+      [[728,'popplio'],[729,'brionne',728],[730,'primarina',729]],
+      [[789,'cosmog'],[790,'cosmoem',789],[791,'solgaleo',790],[792,'lunala',790]],
+      [[810,'grookey'],[811,'thwackey',810],[812,'rillaboom',811]],
+      [[813,'scorbunny'],[814,'raboot',813],[815,'cinderace',814]],
+      [[816,'sobble'],[817,'drizzile',816],[818,'inteleon',817]],
+      [[885,'dreepy'],[886,'drakloak',885],[887,'dragapult',886]],
+      [[906,'sprigatito'],[907,'floragato',906],[908,'meowscarada',907]],
+      [[909,'fuecoco'],[910,'crocalor',909],[911,'skeledirge',910]],
+      [[912,'quaxly'],[913,'quaxwell',912],[914,'quaquaval',913]],
+      [[921,'pawmi'],[922,'pawmo',921],[923,'pawmot',922]],
+      [[957,'tinkatink'],[958,'tinkatuff',957],[959,'tinkaton',958]],
+      [[996,'frigibax'],[997,'arctibax',996],[998,'baxcalibur',997]]
+    ];
+
+    function displayName(name) {
+      return NAME_OVERRIDES[name] || name.split('-').map(x => x[0].toUpperCase() + x.slice(1)).join(' ');
+    }
+    function dexNumber(n) { return '#' + String(n).padStart(4, '0'); }
+    function createElement(tag, className, text) {
+      const element = document.createElement(tag);
+      if (className) element.className = className;
+      if (text !== undefined) element.textContent = text;
+      return element;
+    }
+    function assembleFamily(id, nodes) {
+      if (nodes.length < 2) return null;
+      const byId = new Map(nodes.map(n => [n.id, n]));
+      const depths = new Map();
+      function depthOf(node, visiting = new Set()) {
+        if (depths.has(node.id)) return depths.get(node.id);
+        if (visiting.has(node.id)) return 0;
+        visiting.add(node.id);
+        const parent = byId.get(node.parentId);
+        const depth = parent ? 1 + depthOf(parent, visiting) : 0;
+        visiting.delete(node.id);
+        depths.set(node.id, depth);
+        return depth;
+      }
+      const stageMap = new Map();
+      nodes.forEach(node => {
+        const stage = depthOf(node);
+        if (!stageMap.has(stage)) stageMap.set(stage, []);
+        stageMap.get(stage).push(node);
+      });
+      const stages = [...stageMap.entries()].sort((a,b) => a[0] - b[0]).map(([,members]) => members.sort((a,b) => a.id - b.id));
+      const roots = stages[0];
+      if (!roots || !stages[1]) return null;
+      const childCounts = new Map();
+      nodes.forEach(node => { if (byId.has(node.parentId)) childCounts.set(node.parentId, (childCounts.get(node.parentId) || 0) + 1); });
+      return { id, stages, byId, root: roots[0], count: nodes.length, branching: [...childCounts.values()].some(count => count > 1) || stages.some(stage => stage.length > 1), members: nodes };
+    }
+    function fromRows(rows) {
+      const chains = new Map();
+      rows.forEach(([id,name,parentId,chainId]) => {
+        if (!Number.isInteger(id) || id < 1 || !Number.isInteger(chainId) || chainId < 1 || !name) return;
+        if (!chains.has(chainId)) chains.set(chainId, []);
+        chains.get(chainId).push({id, name, parentId: parentId || null});
+      });
+      return [...chains].map(([id, nodes]) => assembleFamily(id, nodes)).filter(Boolean);
+    }
+    function parseSpeciesCSV(csv) {
+      const lines = csv.trim().split(/\r?\n/);
+      const headers = lines.shift().split(',');
+      const col = name => headers.indexOf(name);
+      const iId = col('id'), iName = col('identifier'), iParent = col('evolves_from_species_id'), iChain = col('evolution_chain_id');
+      if ([iId,iName,iParent,iChain].some(i => i < 0)) throw new Error('Unrecognized species CSV columns');
+      return lines.map(line => {
+        const values = line.split(',');
+        return [Number(values[iId]), values[iName], Number(values[iParent]) || null, Number(values[iChain])];
+      });
+    }
+    function fallbackFamily(entries) {
+      const nodes = entries.map(([id,name,parentId]) => ({id,name,parentId: parentId || null}));
+      return assembleFamily('starter-' + entries[0][0], nodes);
+    }
+    let catalog = STARTER_LINES.map(fallbackFamily).filter(Boolean);
+    let current = catalog[0];
+    let rollCounter = 1;
+    const recentlySeen = [];
+    const stageTrack = document.getElementById('stageTrack');
+    const resultsSection = document.getElementById('results');
+
+    function imageFor(pokemon) {
+      const art = createElement('div', 'artwork');
+      const img = document.createElement('img');
+      img.alt = displayName(pokemon.name) + ' official Pokémon artwork';
+      img.loading = 'lazy';
+      img.decoding = 'async';
+      let fallbackIndex = 0;
+      img.src = ART_ROOT + ART_PATHS[fallbackIndex] + pokemon.id + '.png';
+      img.addEventListener('error', () => {
+        fallbackIndex++;
+        if (fallbackIndex < ART_PATHS.length) img.src = ART_ROOT + ART_PATHS[fallbackIndex] + pokemon.id + '.png';
+        else { img.remove(); art.classList.add('no-art'); }
+      });
+      art.appendChild(img);
+      return art;
+    }
+    function pokemonCard(pokemon, stageIndex, cardIndex, family) {
+      const card = createElement('article','pokemon-card');
+      card.style.setProperty('--tile', TILE_COLORS[(stageIndex * 2 + cardIndex) % TILE_COLORS.length]);
+      card.appendChild(imageFor(pokemon));
+      const copy = createElement('div','pokemon-copy');
+      copy.appendChild(createElement('div','dex',dexNumber(pokemon.id)));
+      copy.appendChild(createElement('h3','',displayName(pokemon.name)));
+      if (family.branching && pokemon.parentId && family.byId.has(pokemon.parentId)) {
+        copy.appendChild(createElement('div','parent-note','↳ from ' + displayName(family.byId.get(pokemon.parentId).name)));
+      }
+      card.appendChild(copy);
+      return card;
+    }
+    function renderFamily(family, isInitial = false) {
+      current = family;
+      document.getElementById('familyTitle').replaceChildren(document.createTextNode(displayName(family.root.name) + ' '),createElement('span','faded','family'));
+      document.getElementById('countFact').innerHTML = '<strong>' + family.count + '</strong> Pokémon';
+      document.getElementById('stagesFact').innerHTML = '<strong>' + family.stages.length + '</strong> stages';
+      document.getElementById('branchFact').textContent = family.branching ? '↗ Branching paths' : '→ Straight-line path';
+      document.getElementById('rollCount').textContent = '/ ' + String(rollCounter).padStart(2,'0');
+      const ids = family.members.map(n => n.id).sort((a,b) => a-b);
+      document.getElementById('dexRange').textContent = 'DEX ' + dexNumber(ids[0]) + ' – ' + dexNumber(ids[ids.length - 1]);
+      document.getElementById('familyNote').textContent = family.branching ? 'Each branch is included, with its parent labeled.' : 'Every stage, from start to finish.';
+      stageTrack.className = 'track ' + (family.branching ? 'branching' : 'linear');
+      stageTrack.style.setProperty('--stages',family.stages.length);
+      const fragment = document.createDocumentFragment();
+      family.stages.forEach((members, stageIndex) => {
+        const block = createElement('section','stage-block');
+        const stageHead = createElement('div','stage-heading');
+        const stageLabel = stageIndex === 0 ? 'BASE FORM' : 'EVOLUTION ' + String(stageIndex).padStart(2,'0');
+        stageHead.appendChild(createElement('span','stage-name',String(stageIndex + 1).padStart(2,'0') + ' / ' + stageLabel));
+        stageHead.appendChild(createElement('span','stage-count',members.length + (members.length === 1 ? ' Pokémon' : ' Pokémon')));
+        block.appendChild(stageHead);
+        const cards = createElement('div', 'cards' + (members.length === 1 ? ' single-card' : ''));
+        members.forEach((node, i) => cards.appendChild(pokemonCard(node, stageIndex, i, family)));
+        block.appendChild(cards);
+        fragment.appendChild(block);
+      });
+      stageTrack.replaceChildren(fragment);
+      if (!isInitial) {
+        stageTrack.classList.remove('reveal');
+        void stageTrack.offsetWidth;
+        stageTrack.classList.add('reveal');
+        document.getElementById('liveMessage').textContent = 'Showing ' + displayName(family.root.name) + ' family, ' + family.count + ' Pokémon across ' + family.stages.length + ' stages.';
+      }
+    }
+    function secureRandom(max) {
+      if (globalThis.crypto && globalThis.crypto.getRandomValues) {
+        const array = new Uint32Array(1);
+        const limit = Math.floor(4294967296 / max) * max;
+        do { crypto.getRandomValues(array); } while (array[0] >= limit);
+        return array[0] % max;
+      }
+      return Math.floor(Math.random() * max);
+    }
+    function roll() {
+      const recentSet = new Set(recentlySeen);
+      const candidates = catalog.filter(f => f.root.id !== current.root.id && !recentSet.has(String(f.id)));
+      const pool = candidates.length ? candidates : catalog.filter(f => f.root.id !== current.root.id);
+      if (!pool.length) return;
+      const next = pool[secureRandom(pool.length)];
+      recentlySeen.push(String(next.id));
+      if (recentlySeen.length > 10) recentlySeen.shift();
+      rollCounter++;
+      renderFamily(next);
+      resultsSection.scrollIntoView({behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth',block:'start'});
+    }
+    document.getElementById('rollButton').addEventListener('click',roll);
+    document.getElementById('againButton').addEventListener('click',roll);
+    renderFamily(current,true);
+
+    function statusMessage(text) { document.getElementById('catalogStatus').textContent = text; }
+    function useSpeciesRows(rows) {
+      const families = fromRows(rows);
+      if (families.length < 150) throw new Error('Pokédex source looks incomplete');
+      catalog = families;
+      statusMessage(families.length + ' evolution families unlocked');
+    }
+    try {
+      const cached = JSON.parse(localStorage.getItem(CACHE_KEY) || 'null');
+      if (cached && Array.isArray(cached.rows) && cached.rows.length > 900) useSpeciesRows(cached.rows);
+    } catch (_) { /* Local storage may be disabled, including in some file previews. */ }
+    fetch(SPECIES_CSV, {cache:'force-cache'})
+      .then(response => { if (!response.ok) throw new Error('Network error'); return response.text(); })
+      .then(text => {
+        const rows = parseSpeciesCSV(text);
+        useSpeciesRows(rows);
+        try { localStorage.setItem(CACHE_KEY, JSON.stringify({rows, updated:Date.now()})); } catch (_) {}
+      })
+      .catch(() => {
+        if (catalog.length < 150) statusMessage(catalog.length + ' fan-favorite families ready');
+      });
+  </script>
+</body>
+</html>
