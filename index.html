@@ -4,9 +4,20 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#f7f7f2">
-  <meta name="description" content="Discover complete Pokémon evolution families, one random roll at a time. Official artwork, every branch, all generations.">
-  <title>Evo Club — The Pokémon Evolution Randomizer</title>
+  <meta name="description" content="Explore Pokémon evolution families and Legendary Pokémon. Search names, discover alternate forms and Mega Evolutions, view typings, and zoom official artwork.">
+  <title>Evo Club — Pokémon Evolutions &amp; Legendary Archive</title>
   <link rel="preconnect" href="https://raw.githubusercontent.com" crossorigin>
+  <script>
+    // Honor a saved preference, or match the device until the user chooses.
+    (function () {
+      let chosen = null;
+      try { chosen = localStorage.getItem('evoclub-theme-v1'); } catch (_) {}
+      if (chosen !== 'dark' && chosen !== 'light') {
+        chosen = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      }
+      document.documentElement.dataset.theme = chosen;
+    })();
+  </script>
   <style>
     :root {
       color-scheme: light;
@@ -201,12 +212,275 @@
       html { scroll-behavior: auto; }
       *, *::before, *::after { animation-duration: .001ms !important; transition-duration: .001ms !important; }
     }
+
+    /* Theme tokens and accessible dark-mode overrides */
+    :root {
+      --surface: #ffffff;
+      --surface-soft: #fcfdfa;
+      --surface-contrast: #e9f4e9;
+      --quiet-ink: #566e66;
+    }
+    html[data-theme="dark"] {
+      color-scheme: dark;
+      --ink: #edf5f3;
+      --muted: #abbac1;
+      --paper: #101821;
+      --white: #1a2832;
+      --surface: #1a2832;
+      --surface-soft: #17232c;
+      --surface-contrast: #2a463c;
+      --quiet-ink: #a9bcb4;
+      --border: #374a53;
+      --mint: #254b3c;
+      --shadow: 0 18px 50px rgba(0,0,0,.28);
+    }
+    .header-actions {display:flex;align-items:center;gap:11px;min-width:0;}
+    .theme-toggle {display:inline-flex;align-items:center;justify-content:center;gap:7px;border:1px solid var(--border);border-radius:999px;background:var(--surface);color:var(--ink);padding:10px 13px;font-size:12px;font-weight:900;white-space:nowrap;}
+    .theme-toggle:hover {border-color:#7aa998;}
+    .theme-icon {font-size:19px;line-height:1;}
+    .top-status {border-color:var(--border);background:var(--surface);color:var(--quiet-ink);}
+    .search-form {background:var(--surface);border-color:var(--ink);box-shadow:4px 4px 0 rgba(29,39,50,.1);}
+    .search-input {color:var(--ink);}
+    .search-suggestions {background:var(--surface);border-color:var(--border);}
+    .search-option {color:var(--ink);}
+    .fact {background:var(--surface);border-color:var(--border);color:var(--muted);}
+    .frame {background:var(--surface);border-color:var(--border);}
+    .frame-top {border-bottom-color:var(--border);color:var(--muted);}
+    .frame-bottom {background:var(--surface-soft);border-top-color:var(--border);}
+    .hero-tag {background:var(--surface-contrast);color:var(--quiet-ink);}
+    .hero-tag .check {color:#389b7e;}
+    .search-label,.stage-name,.section-kicker,.dex,.parent-note,.family-note,.action-footer,.stage-count,.footer,.footer a,.search-option-dex {color:var(--quiet-ink);}
+    .results-title-row h2 .faded {color:var(--muted);}
+    .search-input::placeholder {color:var(--muted);opacity:.8;}
+    .kicker-icon {background:var(--surface-contrast);color:#7a72cc;}
+    .search-option:hover,.search-option[aria-selected="true"] {background:var(--surface-contrast);}
+    .search-go {background:#263743;color:#fff;}
+    .search-go:hover {background:#36505c;}
+    .search-form:focus-within {outline-offset:2px;}
+    .explore-button {text-decoration:none;background:#1d2732;color:#fff;}
+    .explore-button:hover {color:#fff;}
+    .action-card .action-description {color:#344f42;}
+    .action-card .action-footer {color:#486354;}
+    .action-card .action-number {color:inherit;}
+    .action-card .three-dots i {background:currentColor;}
+    html[data-theme="dark"] .action-card {border-color:#638c7b;box-shadow:9px 9px 0 #061016;}
+    html[data-theme="dark"] .action-card .action-description,html[data-theme="dark"] .action-card .action-footer {color:#c0d5c7;}
+    html[data-theme="dark"] .explore-button {background:#eff8f4;color:#12252a;border-color:#eff8f4;}
+    html[data-theme="dark"] .explore-button:hover {color:#12252a;background:#d9ece4;}
+    html[data-theme="dark"] .hero-copy h1 .highlight {color:#6ecbb0;}
+    html[data-theme="dark"] .search-form {box-shadow:4px 4px 0 #071118;}
+    html[data-theme="dark"] .pokeball {border-color:#e2ecec;background:linear-gradient(to bottom,var(--orange) 0 43%,#e2ecec 43% 57%,#fff 57% 100%);}
+    html[data-theme="dark"] .pokeball::after {border-color:#14212c;}
+    html[data-theme="dark"] .footer a {color:#a6d3cb;}
+    html[data-theme="dark"] .pokemon-card {background:var(--tile-dark,#213e3a);}
+    html[data-theme="dark"] .artwork::before {background:#91b5b0;opacity:.17;}
+    html[data-theme="dark"] .pokemon-card .dex,html[data-theme="dark"] .pokemon-card .parent-note {color:#b9cec7;}
+    html[data-theme="dark"] .top-status .status-dot {box-shadow:0 0 0 4px #284638;}
+    html[data-theme="dark"] .track .stage-count {color:#9caeaf;}
+
+    /* History lives in one predictable place, close to the current family. */
+    .family-navigation {position:sticky;top:8px;z-index:9;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:15px;padding:12px 14px;border:1px solid var(--border);border-radius:16px;background:var(--surface);box-shadow:0 7px 26px rgba(25,39,36,.10);}
+    .history-label {color:var(--muted);font-size:11px;font-weight:850;white-space:nowrap;}
+    .family-nav-buttons {display:flex;align-items:center;gap:9px;}
+    .family-nav-button {border:1px solid var(--border);border-radius:11px;padding:12px 15px;font-size:12px;font-weight:950;white-space:nowrap;background:var(--surface-soft);color:var(--ink);transition:transform .15s ease,background .15s ease;}
+    .family-nav-button:hover:not(:disabled) {transform:translateY(-1px);background:var(--surface-contrast);}
+    .family-nav-button.primary {border-color:#1e3531;background:#21392f;color:#fff;}
+    .family-nav-button.primary:hover {background:#315646;}
+    .family-nav-button:disabled {opacity:.43;cursor:not-allowed;}
+    html[data-theme="dark"] .family-nav-button.primary {background:#c7f3ba;color:#132825;border-color:#c7f3ba;}
+    html[data-theme="dark"] .family-nav-button.primary:hover {background:#aee5a5;}
+    .family-note {max-width:720px;line-height:1.5;}
+    .frame-hint {color:var(--muted);font-size:11px;font-weight:750;text-align:right;}
+
+    /* Pokémon types use distinct, readable badges. */
+    .type-list {display:flex;flex-wrap:wrap;gap:5px;margin-top:9px;}
+    .type-badge {display:inline-flex;align-items:center;justify-content:center;min-width:47px;min-height:23px;padding:4px 8px;border-radius:7px;color:#fff;background:#748189;font-size:10px;line-height:1;font-weight:950;letter-spacing:.015em;box-shadow:inset 0 -1px 1px rgba(0,0,0,.12);}
+    .type-badge[data-type="normal"] {background:#858e86;}
+    .type-badge[data-type="fighting"] {background:#c44d61;}
+    .type-badge[data-type="flying"] {background:#718bc2;}
+    .type-badge[data-type="poison"] {background:#9752ad;}
+    .type-badge[data-type="ground"] {background:#ad743d;}
+    .type-badge[data-type="rock"] {background:#928052;}
+    .type-badge[data-type="bug"] {background:#689d38;}
+    .type-badge[data-type="ghost"] {background:#6a64a6;}
+    .type-badge[data-type="steel"] {background:#528d9e;}
+    .type-badge[data-type="fire"] {background:#d66b35;}
+    .type-badge[data-type="water"] {background:#3e80d1;}
+    .type-badge[data-type="grass"] {background:#438c53;}
+    .type-badge[data-type="electric"] {background:#eac654;color:#313031;}
+    .type-badge[data-type="psychic"] {background:#d25a86;}
+    .type-badge[data-type="ice"] {background:#438e9b;}
+    .type-badge[data-type="dragon"] {background:#4f72b8;}
+    .type-badge[data-type="dark"] {background:#555866;}
+    .type-badge[data-type="fairy"] {background:#b75ca4;}
+    .type-badge[data-type="stellar"] {background:#57549c;}
+    .type-unknown {font-size:10px;font-weight:750;color:var(--quiet-ink);}
+
+    /* Primary stage cards and nested form previews. */
+    .pokemon-primary {min-width:0;}
+    .pokemon-card {overflow:visible;}
+    .artwork {border:0;background:transparent;color:inherit;padding:0;width:100%;border-radius:15px;cursor:zoom-in;}
+    .artwork:not(:disabled):hover img,.artwork:not(:disabled):focus-visible img {transform:scale(1.09);}
+    .artwork img {pointer-events:none;}
+    .artwork:disabled {cursor:default;}
+    .art-unavailable {z-index:1;position:relative;text-align:center;font-size:10px;font-weight:800;color:var(--quiet-ink);padding:15px;}
+    .artwork.no-art::after {display:none;}
+    .pokemon-card:hover .artwork img {transform:none;}
+    .pokemon-card:hover .artwork:hover img {transform:scale(1.07);}
+    .speak-button {margin-top:12px;padding:7px 10px;background:rgba(255,255,255,.72);color:#273e41;border:1px solid rgba(46,67,68,.19);border-radius:9px;font-size:11px;font-weight:850;line-height:1.25;}
+    .speak-button:hover:not(:disabled) {background:#fff;}
+    .speak-button:disabled {opacity:.54;cursor:not-allowed;}
+    html[data-theme="dark"] .speak-button {background:rgba(14,24,28,.7);border-color:#58736c;color:#e3f2ec;}
+    .variant-shelf {margin-top:16px;padding-top:13px;border-top:1px dashed rgba(66,99,87,.33);}
+    .variant-section + .variant-section {margin-top:13px;padding-top:12px;border-top:1px dashed rgba(66,99,87,.25);}
+    .variant-heading {font-size:10px;font-weight:1000;letter-spacing:.075em;text-transform:uppercase;color:inherit;opacity:.83;margin:0 0 10px;}
+    .variant-grid {display:grid;gap:8px;}
+    .variant-card {display:flex;align-items:center;gap:9px;min-width:0;padding:8px;border:1px solid rgba(52,83,78,.10);border-radius:13px;background:rgba(255,255,255,.62);}
+    html[data-theme="dark"] .variant-card {background:rgba(7,19,24,.39);border-color:rgba(206,231,222,.14);}
+    .variant-card[hidden] {display:none;}
+    .variant-card.is-variant-match {outline:2px solid var(--orange);outline-offset:1px;}
+    .variant-info {min-width:0;flex:1;}
+    .variant-card .variant-info h4 {margin:4px 0 0;font-size:12px;letter-spacing:-.025em;line-height:1.2;font-weight:950;overflow-wrap:anywhere;}
+    .variant-card .type-list {margin-top:6px;gap:4px;}
+    .variant-card .type-badge {padding:3px 5px;min-width:0;min-height:19px;font-size:9px;border-radius:5px;}
+    .variant-kind {display:inline-block;font-size:8px;font-weight:1000;line-height:1.2;letter-spacing:.05em;color:#516b5b;}
+    .mega-kind {color:#9850a8;}
+    .regional-kind {color:#276a70;}
+    html[data-theme="dark"] .variant-kind {color:#c4d8d1;}
+    html[data-theme="dark"] .mega-kind {color:#e6acee;}
+    .artwork.artwork-small {flex:none;position:relative;width:75px;height:83px;aspect-ratio:auto;min-height:0;}
+    .artwork.artwork-small::before {width:70%;}
+    .artwork.artwork-small img {max-height:82px;}
+    .speak-button.speak-small {padding:5px 8px;margin-top:7px;font-size:10px;}
+    .show-forms {display:block;margin-top:9px;width:100%;text-align:center;background:rgba(255,255,255,.38);color:inherit;border:1px dashed rgba(61,91,87,.4);border-radius:9px;padding:8px 6px;font-size:10px;font-weight:950;}
+    html[data-theme="dark"] .show-forms {background:rgba(7,19,24,.25);border-color:#55746b;}
+    .search-match-pill {margin-top:9px;}
+
+    /* Artwork enlarges in a keyboard- and touch-friendly modal. */
+    .art-dialog {position:fixed;max-height:min(90dvh,780px);width:min(620px,calc(100% - 28px));max-width:none;margin:auto;padding:22px;border-radius:25px;border:1px solid var(--border);background:var(--surface);color:var(--ink);box-shadow:0 30px 90px rgba(0,0,0,.35);text-align:center;}
+    .art-dialog::backdrop {background:rgba(7,14,21,.80);backdrop-filter:blur(6px);}
+    .art-dialog[open] {display:flex;flex-direction:column;align-items:center;}
+    .close-art {align-self:flex-end;border:1px solid var(--border);background:var(--surface-soft);color:var(--ink);border-radius:999px;width:38px;height:38px;font-size:24px;line-height:1;}
+    .art-dialog h2 {font-size:clamp(24px,5vw,39px);font-weight:1000;letter-spacing:-.05em;margin:0 0 5px;}
+    .art-dialog img {display:block;object-fit:contain;width:100%;max-width:460px;height:min(54dvh,470px);}
+    .art-dialog .type-list {justify-content:center;margin:4px 0 10px;}
+    .art-dialog p {font-size:11px;color:var(--muted);margin:0 0 4px;}
+    .frame-bottom {flex-wrap:wrap;}
+
+    @media (max-width:890px) {
+      .variant-card {flex-wrap:wrap;}
+      .variant-info {flex-basis:90px;}
+      .artwork.artwork-small {width:66px;height:72px;}
+    }
+    @media (max-width:680px) {
+      .theme-toggle {width:39px;height:39px;padding:0;}
+      .theme-text {display:none;}
+      .top-status {max-width:148px;}
+      .family-navigation {top:5px;padding:9px 10px;}
+      .family-nav-button {padding:12px 13px;}
+      .history-label {font-size:10px;}
+      .track.linear .pokemon-card {display:block;min-height:0;padding:10px;}
+      .track.linear .pokemon-primary {display:grid;grid-template-columns:125px minmax(0,1fr);gap:12px;align-items:center;}
+      .track.linear .pokemon-copy h3 {font-size:clamp(20px,6vw,26px);}
+      .track.linear .variant-grid {grid-template-columns:repeat(2,minmax(0,1fr));}
+      .track.linear .variant-card {display:block;text-align:center;}
+      .track.linear .variant-card[hidden] {display:none;}
+      .track.linear .artwork-small {margin-inline:auto;}
+      .track.linear .variant-card .type-list {justify-content:center;}
+      .track.branching .variant-card {display:block;text-align:center;}
+      .track.branching .variant-card .type-list {justify-content:center;}
+      .track.branching .artwork-small {margin-inline:auto;}
+      .variant-heading {font-size:9px;}
+      .frame-hint {text-align:left;}
+    }
+    @media (max-width:340px) {
+      .track.linear .pokemon-primary {grid-template-columns:88px minmax(0,1fr);gap:8px;}
+      .track.linear .pokemon-copy h3 {font-size:18px;}
+      .track.linear .artwork img {max-height:90px;}
+    }
+    @media (max-width:390px) {
+      .site-header {gap:8px;}
+      .header-actions {gap:6px;}
+      .top-status {max-width:110px;}
+      .theme-toggle {width:36px;height:36px;}
+      .family-navigation {gap:7px;}
+      .family-nav-buttons {gap:6px;}
+      .family-nav-button {padding:10px 9px;font-size:11px;}
+      .track.linear .pokemon-primary {grid-template-columns:104px minmax(0,1fr);}
+      .track.linear .variant-card .variant-info h4 {font-size:11px;}
+    }
+
+
+    /* Legendary archive: parallel to the evolution explorer, with its own search/history. */
+    .legendary-section {padding-top:clamp(65px,9vw,110px);scroll-margin-top:28px;}
+    .legendary-intro {position:relative;overflow:visible;isolation:isolate;display:grid;grid-template-columns:minmax(0,1.05fr) minmax(320px,.95fr);align-items:center;gap:32px;padding:clamp(24px,4vw,44px);background:#f3e9d4;border:1.5px solid #ddc79e;border-radius:29px;margin-bottom:39px;}
+    .legendary-intro::before {content:"";position:absolute;z-index:-1;right:23%;top:-36px;width:230px;height:230px;border:35px solid rgba(161,112,38,.06);border-radius:50%;pointer-events:none;}
+    .legendary-eyebrow {display:flex;align-items:center;gap:9px;color:#926326;text-transform:uppercase;letter-spacing:.15em;font-size:11px;font-weight:1000;}
+    .legendary-eyebrow .legendary-glyph {font-size:21px;line-height:.8;}
+    .legendary-intro h2 {margin:14px 0 15px;font-size:clamp(38px,4.35vw,57px);line-height:1.01;letter-spacing:-.075em;font-weight:1000;color:#342d32;}
+    .legendary-intro h2 span {color:#ad6f29;}
+    .legendary-description {max-width:470px;margin:0;color:#65574b;font-size:14px;line-height:1.65;font-weight:650;}
+    .legendary-catalog-count {display:inline-flex;align-items:center;gap:7px;margin-top:17px;padding:8px 12px;border-radius:999px;background:rgba(255,255,255,.6);font-size:11px;font-weight:900;color:#735129;}
+    .legendary-catalog-count::before {content:"✦";font-size:12px;color:#bb8143;}
+    .legendary-search-area {position:relative;min-width:0;z-index:5;}
+    .legendary-search-card {padding:20px;border-radius:19px;background:rgba(255,255,255,.69);border:1px solid rgba(127,94,46,.19);box-shadow:0 9px 30px rgba(108,73,35,.07);}
+    .legendary-search-card .search-label {color:#715132;}
+    .legendary-search-card .search-form {border-color:#94733b;box-shadow:4px 4px 0 rgba(109,72,27,.12);}
+    .legendary-search-card .search-go {background:#77552c;}
+    .legendary-search-card .search-go:hover {background:#64451f;}
+    .legendary-search-card .search-hint {margin-bottom:0;color:#7a6854;}
+    .legendary-results {scroll-margin-top:28px;}
+    .legendary-results .kicker-icon {background:#f8ebcc;color:#a56d22;}
+    .legendary-results .frame-top .tiny-square {border-color:#d1a65f;}
+    .legendary-track.single-legend {display:block;}
+    .legendary-track.single-legend .stage-block {width:min(100%,395px);margin-inline:auto;}
+    .legendary-track.single-legend .pokemon-card {width:100%;}
+    .legendary-track.single-legend .artwork img {max-height:240px;}
+    .legendary-track.single-legend .pokemon-copy h3 {font-size:clamp(22px,3vw,29px);}
+    .legendary-note {font-size:11px;color:var(--muted);margin-top:14px;line-height:1.5;}
+    .legendary-jump {display:inline-flex;align-items:center;gap:7px;margin-top:17px;font-weight:900;color:#915b22;font-size:12px;text-decoration:underline;text-underline-offset:4px;}
+    .legendary-jump:hover {color:#ae6a2c;}
+    html[data-theme="dark"] .legendary-intro {background:#332c31;border-color:#6d583d;}
+    html[data-theme="dark"] .legendary-intro h2 {color:#f2e9db;}
+    html[data-theme="dark"] .legendary-intro h2 span {color:#f2c47e;}
+    html[data-theme="dark"] .legendary-eyebrow {color:#e9b86e;}
+    html[data-theme="dark"] .legendary-description {color:#d3c6b6;}
+    html[data-theme="dark"] .legendary-catalog-count {background:#4e3e39;color:#efd0a0;}
+    html[data-theme="dark"] .legendary-search-card {background:#3b3338;border-color:#715b49;}
+    html[data-theme="dark"] .legendary-search-card .search-label {color:#ebc99a;}
+    html[data-theme="dark"] .legendary-search-card .search-form {border-color:#a98958;box-shadow:4px 4px 0 #261f23;}
+    html[data-theme="dark"] .legendary-search-card .search-go {background:#a4773c;color:#fff;}
+    html[data-theme="dark"] .legendary-search-card .search-hint {color:#dac9b3;}
+    html[data-theme="dark"] .legendary-jump {color:#e8ba7a;}
+    @media (max-width:890px) {
+      .legendary-intro {grid-template-columns:minmax(0,1fr) minmax(290px,.9fr);gap:24px;}
+      .legendary-intro h2 {font-size:clamp(37px,5vw,51px);}
+      .legendary-search-card {padding:15px;}
+    }
+    @media (max-width:680px) {
+      .legendary-section {padding-top:70px;}
+      .legendary-intro {grid-template-columns:1fr;gap:24px;padding:23px;border-radius:22px;margin-bottom:29px;}
+      .legendary-intro h2 {font-size:clamp(40px,10.2vw,53px);}
+      .legendary-search-card {padding:15px;}
+      .legendary-track.single-legend .stage-block {width:100%;max-width:340px;}
+      .legendary-track.single-legend .pokemon-primary {grid-template-columns: minmax(105px,135px) minmax(0,1fr);}
+      .legendary-track.single-legend .artwork img {max-height:140px;}
+      .legendary-track.single-legend .pokemon-copy h3 {font-size:clamp(19px,6vw,26px);}
+      .legendary-description {font-size:13px;}
+    }
+    @media (max-width:390px) {
+      .legendary-track.single-legend .pokemon-primary {grid-template-columns:105px minmax(0,1fr);}
+      .legendary-search-card .search-input {font-size:12px;}
+    }
   </style>
 </head>
 <body>
   <header class="site-header container">
     <a class="brand" href="#top" aria-label="Evo Club home"><span class="pokeball" aria-hidden="true"></span><span>evo<span class="brand-accent">club</span>.</span></a>
-    <div class="top-status"><span class="status-dot" aria-hidden="true"></span><span id="catalogStatus">Your Pokédex is loading</span></div>
+    <div class="header-actions">
+      <div class="top-status"><span class="status-dot" aria-hidden="true"></span><span id="catalogStatus">Your Pokédex is loading</span></div>
+      <button id="themeToggle" class="theme-toggle" type="button" aria-pressed="false" aria-label="Switch to dark mode"><span class="theme-icon" aria-hidden="true">☾</span><span class="theme-text">Dark mode</span></button>
+    </div>
   </header>
 
   <main id="top">
@@ -214,27 +488,28 @@
       <div class="hero-copy">
         <div class="eyebrow"><span class="small-burst" aria-hidden="true">✳</span> Your pocket evolution explorer</div>
         <h1>The whole<br><span class="highlight">evolution</span><br>in one click<span class="period">.</span></h1>
-        <p class="description">Meet an entire Pokémon evolution family at random. Every stage, every branching path, and all the official artwork.</p>
+        <p class="description">Explore an entire Pokémon family—every evolution, unique form, and Mega Evolution. Search or discover a random line.</p>
         <div class="hero-tags"><span class="hero-tag"><span class="check">✓</span> Every branch included</span><span class="hero-tag"><span class="check">✓</span> All generations</span></div>
         <div class="search-area" id="searchArea">
           <label class="search-label" for="pokemonSearch">Find a Pokémon</label>
           <div class="search-wrap">
             <form class="search-form" id="searchForm" role="search" autocomplete="off">
               <span class="search-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"></circle><path d="m16 16 5 5"></path></svg></span>
-              <input class="search-input" id="pokemonSearch" name="pokemon" type="search" placeholder="Try Pikachu, Eevee, or Wooper…" spellcheck="false" autocapitalize="off" autocomplete="off" role="combobox" aria-autocomplete="list" aria-controls="searchSuggestions" aria-expanded="false" aria-haspopup="listbox" aria-describedby="searchHint">
+              <input class="search-input" id="pokemonSearch" name="pokemon" type="search" placeholder="Try Wooper, Mega Charizard, or Eevee…" spellcheck="false" autocapitalize="off" autocomplete="off" role="combobox" aria-autocomplete="list" aria-controls="searchSuggestions" aria-expanded="false" aria-haspopup="listbox" aria-describedby="searchHint">
               <button class="search-go" type="submit">Find ↗</button>
             </form>
             <div class="search-suggestions" id="searchSuggestions" role="listbox" aria-label="Matching Pokémon" hidden></div>
           </div>
           <p class="search-hint" id="searchHint">Type a name to see suggestions. Use ↑ ↓ and Enter to choose.</p>
+          <a class="legendary-jump" href="#legendary">✦ Explore the Legendary archive ↗</a>
         </div>
       </div>
       <div class="action-card">
         <div class="action-inner">
           <div class="action-number"><span>THE EVOLUTION MACHINE</span><span>↗ 001</span></div>
-          <h2>Who's<br>next?</h2>
-          <p class="action-description">A new family is one tap away.</p>
-          <button class="roll-button" id="rollButton" type="button"><span class="button-group"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m18 14 4 4-4 4"/><path d="m18 2 4 4-4 4"/><path d="M2 18h2.7a5 5 0 0 0 3.5-1.5L15.8 8A5 5 0 0 1 19.3 6H22"/><path d="M2 6h2.7a5 5 0 0 1 3.5 1.5l1.7 1.8"/><path d="m14.5 15 1.3 1.5a5 5 0 0 0 3.5 1.5H22"/></svg> <span>Roll a random line</span></span><span class="button-arrow" aria-hidden="true">→</span></button>
+          <h2>Meet<br>the family.</h2>
+          <p class="action-description">Dive in, then use Next and Previous in one place.</p>
+          <a class="roll-button explore-button" href="#results"><span class="button-group"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v18m-7-7 7 7 7-7" /></svg><span>Explore family</span></span><span class="button-arrow" aria-hidden="true">↓</span></a>
           <div class="action-footer"><span class="three-dots" aria-hidden="true"><i></i><i></i><i></i></span> Gotta see 'em all.</div>
         </div>
       </div>
@@ -246,27 +521,93 @@
           <div class="section-kicker"><span class="kicker-icon" aria-hidden="true">✳</span> Your latest discovery <span id="rollCount">/ 01</span></div>
           <h2 id="familyTitle">Bulbasaur <span class="faded">family</span></h2>
         </div>
-        <div class="facts"><span class="fact" id="countFact"><strong>3</strong> Pokémon</span><span class="fact" id="stagesFact"><strong>3</strong> stages</span><span class="fact" id="branchFact">Straight-line path</span></div>
+        <div class="facts"><span class="fact" id="countFact"><strong>3</strong> Pokémon</span><span class="fact" id="stagesFact"><strong>3</strong> stages</span><span class="fact" id="branchFact">Straight-line path</span><span class="fact" id="formsFact">Base forms</span></div>
       </div>
+      <nav class="family-navigation" aria-label="Evolution family navigation">
+        <span class="history-label" id="historyText">Viewed 1 of 1</span>
+        <div class="family-nav-buttons">
+          <button type="button" class="family-nav-button" id="previousButton" disabled>← Previous</button>
+          <button type="button" class="family-nav-button primary" id="nextButton">Next random →</button>
+        </div>
+      </nav>
       <div class="frame">
         <div class="frame-top"><span class="tiny-square" aria-hidden="true"></span> EVOLUTION MAP <span class="stretch"></span><span class="frame-dex" id="dexRange">DEX #0001 – #0003</span></div>
         <div class="track linear" id="stageTrack" aria-label="Complete evolution family"></div>
-        <div class="frame-bottom"><div class="family-note" id="familyNote">Every stage, start to finish.</div><button class="again-button" id="againButton" type="button">↻ &nbsp; Roll another</button></div>
+        <div class="frame-bottom"><div class="family-note" id="familyNote">Every stage, start to finish.</div><span class="frame-hint">Tap artwork to zoom · ♫ to hear a name</span></div>
       </div>
       <p id="liveMessage" class="sr-only" aria-live="polite" aria-atomic="true"></p>
     </section>
+
+    <!-- Dedicated Legendary archive. Single-stage Pokémon live here as well as rare evolving lines. -->
+    <section class="legendary-section container" id="legendary" aria-label="Legendary Pokémon explorer">
+      <div class="legendary-intro">
+        <div class="legendary-intro-copy">
+          <div class="legendary-eyebrow"><span class="legendary-glyph" aria-hidden="true">✦</span> A rare kind of discovery</div>
+          <h2>Enter the<br><span>Legendary</span><br>archive.</h2>
+          <p class="legendary-description">Meet the Pokémon of legends, one discovery at a time. Most stand alone; rare evolving Legendary lines appear together, with their alternate forms and Mega Evolutions.</p>
+          <div class="legendary-catalog-count" id="legendaryCatalogCount">Legendary selection ready</div>
+        </div>
+        <div class="legendary-search-area" id="legendarySearchArea">
+          <div class="legendary-search-card">
+            <label class="search-label" for="legendarySearch">Find a Legendary Pokémon</label>
+            <div class="search-wrap">
+              <form class="search-form" id="legendarySearchForm" role="search" autocomplete="off">
+                <span class="search-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"></circle><path d="m16 16 5 5"></path></svg></span>
+                <input class="search-input" id="legendarySearch" name="legendary" type="search" placeholder="Try Mewtwo, Lugia, or Cosmog…" spellcheck="false" autocapitalize="off" autocomplete="off" role="combobox" aria-autocomplete="list" aria-controls="legendarySuggestions" aria-expanded="false" aria-haspopup="listbox" aria-describedby="legendarySearchHint">
+                <button class="search-go" type="submit">Find ↗</button>
+              </form>
+              <div class="search-suggestions" id="legendarySuggestions" role="listbox" aria-label="Matching Legendary Pokémon" hidden></div>
+            </div>
+            <p class="search-hint" id="legendarySearchHint">Autocomplete includes Legendary forms and Mega Evolutions.</p>
+          </div>
+        </div>
+      </div>
+      <div class="legendary-results" id="legendaryResults">
+        <div class="results-title-row">
+          <div>
+            <div class="section-kicker"><span class="kicker-icon" aria-hidden="true">✦</span> Legendary discovery <span id="legendaryRollCount">/ 01</span></div>
+            <h2 id="legendaryTitle">Mewtwo <span class="faded">Legendary Pokémon</span></h2>
+          </div>
+          <div class="facts"><span class="fact" id="legendaryCountFact"><strong>1</strong> Legendary</span><span class="fact" id="legendaryStagesFact">Does not evolve</span><span class="fact" id="legendaryFormsFact">2 extra forms</span></div>
+        </div>
+        <nav class="family-navigation" aria-label="Legendary Pokémon navigation">
+          <span class="history-label" id="legendaryHistoryText">Viewed 1 of 1</span>
+          <div class="family-nav-buttons">
+            <button type="button" class="family-nav-button" id="legendaryPreviousButton" disabled>← Previous</button>
+            <button type="button" class="family-nav-button primary" id="legendaryNextButton">Next legendary →</button>
+          </div>
+        </nav>
+        <div class="frame">
+          <div class="frame-top"><span class="tiny-square" aria-hidden="true"></span> LEGENDARY RECORD <span class="stretch"></span><span class="frame-dex" id="legendaryDexRange">DEX #0150</span></div>
+          <div class="track linear legendary-track single-legend" id="legendaryTrack" aria-label="Legendary Pokémon and any evolutions"></div>
+          <div class="frame-bottom"><div class="family-note" id="legendaryNote">A Legendary Pokémon with no evolution.</div><span class="frame-hint">Tap artwork to zoom · ♫ to hear a name</span></div>
+        </div>
+        <p class="legendary-note">Legendary and Mythical Pokémon are separate categories in the Pokédex. This archive includes only Legendary Pokémon.</p>
+        <p id="legendaryLiveMessage" class="sr-only" aria-live="polite" aria-atomic="true"></p>
+      </div>
+    </section>
   </main>
 
+  <dialog class="art-dialog" id="artDialog" aria-labelledby="modalName">
+    <button class="close-art" id="closeArt" type="button" aria-label="Close enlarged artwork">×</button>
+    <h2 id="modalName">Pokémon</h2>
+    <img id="modalArt" alt="" src="data:,">
+    <div id="modalTypes"></div>
+    <p>Tap outside, press Escape, or use × to close.</p>
+  </dialog>
   <footer class="footer container"><span>Made for curious trainers ✳ &nbsp; Unofficial fan project.</span><span>Artwork via <a href="https://github.com/PokeAPI/sprites" target="_blank" rel="noopener noreferrer">PokéAPI's GitHub</a> · Pokémon © Nintendo / Creatures / GAME FREAK</span></footer>
 
   <script>
     'use strict';
-    // Live Pokédex data: https://github.com/PokeAPI/pokeapi/tree/master/data/v2/csv
-    // Official artwork: https://github.com/PokeAPI/sprites/tree/master/sprites/pokemon/other/official-artwork
-    const SPECIES_CSV = 'https://raw.githubusercontent.com/PokeAPI/pokeapi/master/data/v2/csv/pokemon_species.csv';
+    // The Pokédex tables below are public CSV datasets published by PokéAPI.
+    // Species are evolution stages; varieties / Megas remain attached to their species.
+    const DATA_ROOT = 'https://raw.githubusercontent.com/PokeAPI/pokeapi/master/data/v2/csv/';
+    const SPECIES_CSV = DATA_ROOT + 'pokemon_species.csv';
     const ART_ROOT = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/';
     const ART_PATHS = ['other/official-artwork/', 'other/home/', ''];
-    const CACHE_KEY = 'evoclub-species-v1';
+    const SPECIES_CACHE_KEY = 'evoclub-species-v2';
+    const FORMS_CACHE_KEY = 'evoclub-forms-v2';
+    const THEME_CACHE_KEY = 'evoclub-theme-v1';
     const NAME_OVERRIDES = {
       'mr-mime': 'Mr. Mime', 'mime-jr': 'Mime Jr.', 'mr-rime': 'Mr. Rime',
       'farfetchd': "Farfetch’d", 'sirfetchd': "Sirfetch’d", 'nidoran-f': 'Nidoran♀',
@@ -276,9 +617,15 @@
       'chien-pao': 'Chien-Pao', 'ting-lu': 'Ting-Lu', 'chi-yu': 'Chi-Yu'
     };
     const TILE_COLORS = ['#e9f4ea', '#edf0ff', '#fff0e1', '#f7eafd', '#dff3f3', '#ffeaf0'];
-
-    // Instant no-network fallback; the complete, current species CSV replaces this when available.
-    // Entries are [National Dex ID, species name, evolves-from ID (if any)].
+    const DARK_TILE_COLORS = ['#203c37', '#2b3455', '#443528', '#40304b', '#1f4347', '#493340'];
+    const TYPE_NAMES = {
+      1:'normal', 2:'fighting', 3:'flying', 4:'poison', 5:'ground', 6:'rock',
+      7:'bug', 8:'ghost', 9:'steel', 10:'fire', 11:'water', 12:'grass',
+      13:'electric', 14:'psychic', 15:'ice', 16:'dragon', 17:'dark',
+      18:'fairy', 19:'stellar'
+    };
+    // Small offline demo while the full live Pokédex is loading.
+    // Entries are [National Dex ID, species name, evolves-from species ID].
     const STARTER_LINES = [
       [[1,'bulbasaur'],[2,'ivysaur',1],[3,'venusaur',2]],
       [[4,'charmander'],[5,'charmeleon',4],[6,'charizard',5]],
@@ -325,7 +672,6 @@
       [[722,'rowlet'],[723,'dartrix',722],[724,'decidueye',723]],
       [[725,'litten'],[726,'torracat',725],[727,'incineroar',726]],
       [[728,'popplio'],[729,'brionne',728],[730,'primarina',729]],
-      [[789,'cosmog'],[790,'cosmoem',789],[791,'solgaleo',790],[792,'lunala',790]],
       [[810,'grookey'],[811,'thwackey',810],[812,'rillaboom',811]],
       [[813,'scorbunny'],[814,'raboot',813],[815,'cinderace',814]],
       [[816,'sobble'],[817,'drizzile',816],[818,'inteleon',817]],
@@ -335,19 +681,78 @@
       [[912,'quaxly'],[913,'quaxwell',912],[914,'quaquaval',913]],
       [[921,'pawmi'],[922,'pawmo',921],[923,'pawmot',922]],
       [[957,'tinkatink'],[958,'tinkatuff',957],[959,'tinkaton',958]],
+      [[194,'wooper'],[195,'quagsire',194],[980,'clodsire',194]],
       [[996,'frigibax'],[997,'arctibax',996],[998,'baxcalibur',997]]
     ];
 
-    function displayName(name) {
-      return NAME_OVERRIDES[name] || name.split('-').map(x => x[0].toUpperCase() + x.slice(1)).join(' ');
+
+    // Offline starter Legendary selection. The complete collection uses the official
+    // pokemon_species.csv is_legendary flag; Mythical Pokémon are intentionally excluded.
+    const LEGENDARY_LINES = [
+      [[150,'mewtwo']], [[144,'articuno']], [[145,'zapdos']], [[146,'moltres']],
+      [[243,'raikou']], [[244,'entei']], [[245,'suicune']],
+      [[249,'lugia']], [[250,'ho-oh']], [[377,'regirock']], [[378,'regice']], [[379,'registeel']],
+      [[380,'latias']], [[381,'latios']], [[382,'kyogre']], [[383,'groudon']], [[384,'rayquaza']],
+      [[483,'dialga']], [[484,'palkia']], [[487,'giratina']], [[488,'cresselia']],
+      [[641,'tornadus']], [[642,'thundurus']], [[645,'landorus']],
+      [[643,'reshiram']], [[644,'zekrom']], [[646,'kyurem']],
+      [[716,'xerneas']], [[717,'yveltal']], [[718,'zygarde']],
+      [[772,'type-null'],[773,'silvally',772]],
+      [[789,'cosmog'],[790,'cosmoem',789],[791,'solgaleo',790],[792,'lunala',790]],
+      [[785,'tapu-koko']], [[786,'tapu-lele']], [[787,'tapu-bulu']], [[788,'tapu-fini']],
+      [[888,'zacian']], [[889,'zamazenta']], [[890,'eternatus']],
+      [[891,'kubfu'],[892,'urshifu',891]],
+      [[1001,'wo-chien']], [[1002,'chien-pao']], [[1003,'ting-lu']], [[1004,'chi-yu']],
+      [[1007,'koraidon']], [[1008,'miraidon']], [[1017,'ogerpon']], [[1024,'terapagos']]
+    ];
+    function fallbackLegendary(entries) {
+      return assembleFamily('legend-' + entries[0][0],
+        entries.map(([id,name,parentId])=>({id,name,parentId:parentId||null})), true);
     }
-    function dexNumber(n) { return '#' + String(n).padStart(4, '0'); }
+    function legendaryFromRows(rows) {
+      return fromRows(rows.filter(row=>row[4]===true),true);
+    }
+
+    function displayName(name) {
+      return NAME_OVERRIDES[name] || name.split('-').map(x => x ? x[0].toUpperCase() + x.slice(1) : '').join(' ');
+    }
+    function dexNumber(id) { return '#' + String(id).padStart(4, '0'); }
     function createElement(tag, className, text) {
       const element = document.createElement(tag);
       if (className) element.className = className;
       if (text !== undefined) element.textContent = text;
       return element;
     }
+    function normalizeSearch(text) {
+      return String(text).normalize('NFKD').replace(/[\u0300-\u036f]/g, '')
+        .replace(/♀/g, 'f').replace(/♂/g, 'm')
+        .toLowerCase().replace(/[^a-z0-9]/g, '');
+    }
+    function safeGet(key) {
+      try { return localStorage.getItem(key); } catch (_) { return null; }
+    }
+    function safeSet(key, value) {
+      try { localStorage.setItem(key, value); } catch (_) { /* optional cache */ }
+    }
+
+    // Theme is initialized in the document head to prevent a light-theme flash.
+    const themeToggle = document.getElementById('themeToggle');
+    function applyTheme(theme) {
+      const dark = theme === 'dark';
+      document.documentElement.dataset.theme = dark ? 'dark' : 'light';
+      document.querySelector('meta[name="theme-color"]').content = dark ? '#101821' : '#f7f7f2';
+      themeToggle.setAttribute('aria-pressed', String(dark));
+      themeToggle.setAttribute('aria-label', dark ? 'Switch to light mode' : 'Switch to dark mode');
+      themeToggle.querySelector('.theme-icon').textContent = dark ? '☀' : '☾';
+      themeToggle.querySelector('.theme-text').textContent = dark ? 'Light mode' : 'Dark mode';
+    }
+    applyTheme(document.documentElement.dataset.theme);
+    themeToggle.addEventListener('click', () => {
+      const next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+      applyTheme(next);
+      safeSet(THEME_CACHE_KEY, next);
+    });
+
     function assembleFamily(id, nodes, includeSingles = false) {
       if (nodes.length < (includeSingles ? 1 : 2)) return null;
       const byId = new Map(nodes.map(n => [n.id, n]));
@@ -368,12 +773,15 @@
         if (!stageMap.has(stage)) stageMap.set(stage, []);
         stageMap.get(stage).push(node);
       });
-      const stages = [...stageMap.entries()].sort((a,b) => a[0] - b[0]).map(([,members]) => members.sort((a,b) => a.id - b.id));
-      const roots = stages[0];
-      if (!roots || (!includeSingles && !stages[1])) return null;
+      const stages = [...stageMap.entries()].sort((a,b) => a[0] - b[0])
+        .map(([,members]) => members.sort((a,b) => a.id - b.id));
+      if (!stages[0] || (!includeSingles && !stages[1])) return null;
       const childCounts = new Map();
-      nodes.forEach(node => { if (byId.has(node.parentId)) childCounts.set(node.parentId, (childCounts.get(node.parentId) || 0) + 1); });
-      return { id, stages, byId, root: roots[0], count: nodes.length, branching: [...childCounts.values()].some(count => count > 1) || stages.some(stage => stage.length > 1), members: nodes };
+      nodes.forEach(node => {
+        if (byId.has(node.parentId)) childCounts.set(node.parentId, (childCounts.get(node.parentId) || 0) + 1);
+      });
+      return {id, stages, byId, root: stages[0][0], count: nodes.length,
+        branching: [...childCounts.values()].some(n => n > 1) || stages.some(stage => stage.length > 1), members: nodes};
     }
     function fromRows(rows, includeSingles = false) {
       const chains = new Map();
@@ -384,270 +792,846 @@
       });
       return [...chains].map(([id, nodes]) => assembleFamily(id, nodes, includeSingles)).filter(Boolean);
     }
-    function parseSpeciesCSV(csv) {
+    function parseTable(csv, fields) {
       const lines = csv.trim().split(/\r?\n/);
-      const headers = lines.shift().split(',');
-      const col = name => headers.indexOf(name);
-      const iId = col('id'), iName = col('identifier'), iParent = col('evolves_from_species_id'), iChain = col('evolution_chain_id');
-      if ([iId,iName,iParent,iChain].some(i => i < 0)) throw new Error('Unrecognized species CSV columns');
-      return lines.map(line => {
-        const values = line.split(',');
-        return [Number(values[iId]), values[iName], Number(values[iParent]) || null, Number(values[iChain])];
+      const header = lines.shift().split(',');
+      const indices = fields.map(field => header.indexOf(field));
+      if (indices.some(i => i < 0)) throw new Error('Pokédex data is missing columns: ' + fields.join(', '));
+      return lines.filter(Boolean).map(line => {
+        const cells = line.split(',');
+        return indices.map(i => cells[i]);
       });
     }
+    function parseSpeciesCSV(csv) {
+      return parseTable(csv, ['id','identifier','evolves_from_species_id','evolution_chain_id','is_legendary'])
+        .map(([id,name,parent,chain,legendary]) => [Number(id),name,Number(parent) || null,Number(chain),legendary==='1']);
+    }
     function fallbackFamily(entries) {
-      const nodes = entries.map(([id,name,parentId]) => ({id,name,parentId: parentId || null}));
-      return assembleFamily('starter-' + entries[0][0], nodes);
+      return assembleFamily('starter-' + entries[0][0],
+        entries.map(([id,name,parentId]) => ({id,name,parentId:parentId || null})));
     }
     let catalog = STARTER_LINES.map(fallbackFamily).filter(Boolean);
+    let legendaryCatalog = LEGENDARY_LINES.map(fallbackLegendary).filter(Boolean);
+    let legendaryIds = new Set(legendaryCatalog.flatMap(f=>f.members.map(p=>p.id)));
+    let legendaryFamilyBySpecies = new Map(legendaryCatalog.flatMap(f=>f.members.map(p=>[p.id,f])));
+    let searchFamilies = [...catalog,...legendaryCatalog];
     let current = catalog[0];
-    let rollCounter = 1;
+    let fullPokedexReady = false;
+    let formsReady = false;
     const recentlySeen = [];
     const stageTrack = document.getElementById('stageTrack');
     const resultsSection = document.getElementById('results');
     const searchInput = document.getElementById('pokemonSearch');
     const searchSuggestions = document.getElementById('searchSuggestions');
+    const liveMessage = document.getElementById('liveMessage');
+    const previousButton = document.getElementById('previousButton');
+    const nextButton = document.getElementById('nextButton');
+    const historyText = document.getElementById('historyText');
     let searchEntries = [];
     let suggestionMatches = [];
     let activeSuggestionIndex = -1;
-    let fullPokedexReady = false;
+    const history = [{family:current, matchedId:null, matchedVariantKey:null}];
+    let historyIndex = 0;
+    let totalDiscoveries = 1;
+    const legendaryTrack = document.getElementById('legendaryTrack');
+    const legendaryResults = document.getElementById('legendaryResults');
+    const legendarySearchInput = document.getElementById('legendarySearch');
+    const legendarySuggestions = document.getElementById('legendarySuggestions');
+    const legendaryPreviousButton = document.getElementById('legendaryPreviousButton');
+    const legendaryNextButton = document.getElementById('legendaryNextButton');
+    const legendaryHistoryText = document.getElementById('legendaryHistoryText');
+    const legendaryLiveMessage = document.getElementById('legendaryLiveMessage');
+    let currentLegendary = legendaryCatalog[0];
+    const legendaryHistory = [{family:currentLegendary,matchedId:null,matchedVariantKey:null}];
+    let legendaryHistoryIndex = 0;
+    const legendaryRecentlySeen = [];
+    let legendarySearchEntries = [];
+    let legendaryMatches = [];
+    let legendaryActiveIndex = -1;
 
-    function normalizeSearch(text) {
-      return String(text).normalize('NFKD').replace(/[\u0300-\u036f]/g, '')
-        .replace(/♀/g, 'f').replace(/♂/g, 'm')
-        .toLowerCase().replace(/[^a-z0-9]/g, '');
-    }
+    // Fallback types and familiar forms are available before CSV requests complete.
+    const fallbackTypes = {
+      1:['grass','poison'],2:['grass','poison'],3:['grass','poison'],4:['fire'],5:['fire'],6:['fire','flying'],
+      7:['water'],8:['water'],9:['water'],10:['bug'],11:['bug'],12:['bug','flying'],
+      25:['electric'],26:['electric'],37:['fire'],38:['fire'],43:['grass','poison'],44:['grass','poison'],45:['grass','poison'],
+      60:['water'],61:['water'],62:['water','fighting'],63:['psychic'],64:['psychic'],65:['psychic'],
+      74:['rock','ground'],75:['rock','ground'],76:['rock','ground'],92:['ghost','poison'],93:['ghost','poison'],94:['ghost','poison'],
+      133:['normal'],134:['water'],135:['electric'],136:['fire'],196:['psychic'],197:['dark'],470:['grass'],471:['ice'],700:['fairy'],
+      147:['dragon'],148:['dragon'],149:['dragon','flying'],150:['psychic'],172:['electric'],173:['fairy'],
+      194:['water','ground'],195:['water','ground'],980:['poison','ground'],
+      155:['fire'],156:['fire'],157:['fire'],175:['fairy'],176:['fairy','flying'],468:['fairy','flying'],
+      280:['psychic','fairy'],281:['psychic','fairy'],282:['psychic','fairy'],475:['psychic','fighting'],
+      443:['dragon','ground'],444:['dragon','ground'],445:['dragon','ground'],447:['fighting'],448:['fighting','steel'],
+      501:['water'],502:['water'],503:['water'],722:['grass','flying'],723:['grass','flying'],724:['grass','ghost'],
+      609:['ghost','fire'],906:['grass'],907:['grass'],908:['grass','dark'],909:['fire'],910:['fire'],911:['fire','ghost'],
+      144:['ice','flying'],145:['electric','flying'],146:['fire','flying'],
+      243:['electric'],244:['fire'],245:['water'],249:['psychic','flying'],250:['fire','flying'],
+      377:['rock'],378:['ice'],379:['steel'],380:['dragon','psychic'],381:['dragon','psychic'],
+      382:['water'],383:['ground'],384:['dragon','flying'],
+      483:['steel','dragon'],484:['water','dragon'],487:['ghost','dragon'],488:['psychic'],
+      641:['flying'],642:['electric','flying'],645:['ground','flying'],643:['dragon','fire'],
+      644:['dragon','electric'],646:['dragon','ice'],716:['fairy'],717:['dark','flying'],718:['dragon','ground'],
+      772:['normal'],773:['normal'],785:['electric','fairy'],786:['psychic','fairy'],
+      787:['grass','fairy'],788:['water','fairy'],888:['fairy'],889:['fighting'],890:['poison','dragon'],
+      891:['fighting'],892:['fighting','dark'],1001:['dark','grass'],1002:['dark','ice'],
+      1003:['dark','ground'],1004:['dark','fire'],1007:['fighting','dragon'],1008:['electric','dragon'],
+      1017:['grass'],1024:['normal']
+    };
+    Object.assign(fallbackTypes, {
+      13:['bug','poison'],14:['bug','poison'],15:['bug','poison'],
+      16:['normal','flying'],17:['normal','flying'],18:['normal','flying'],
+      35:['fairy'],36:['fairy'],66:['fighting'],67:['fighting'],68:['fighting'],
+      152:['grass'],153:['grass'],154:['grass'],158:['water'],159:['water'],160:['water'],
+      182:['grass'],186:['water'],
+      265:['bug'],266:['bug'],267:['bug','flying'],268:['bug'],269:['bug','poison'],
+      328:['ground'],329:['ground','dragon'],330:['ground','dragon'],
+      371:['dragon'],372:['dragon'],373:['dragon','flying'],
+      374:['steel','psychic'],375:['steel','psychic'],376:['steel','psychic'],
+      387:['grass'],388:['grass'],389:['grass','ground'],
+      390:['fire'],391:['fire','fighting'],392:['fire','fighting'],
+      393:['water'],394:['water'],395:['water','steel'],
+      495:['grass'],496:['grass'],497:['grass'],
+      498:['fire'],499:['fire','fighting'],500:['fire','fighting'],
+      551:['ground','dark'],552:['ground','dark'],553:['ground','dark'],
+      607:['ghost','fire'],608:['ghost','fire'],
+      610:['dragon'],611:['dragon'],612:['dragon'],
+      633:['dark','dragon'],634:['dark','dragon'],635:['dark','dragon'],
+      650:['grass'],651:['grass'],652:['grass','fighting'],
+      653:['fire'],654:['fire'],655:['fire','psychic'],
+      656:['water'],657:['water'],658:['water','dark'],
+      714:['flying','dragon'],715:['flying','dragon'],
+      725:['fire'],726:['fire'],727:['fire','dark'],
+      728:['water'],729:['water'],730:['water','fairy'],
+      789:['psychic'],790:['psychic'],791:['psychic','steel'],792:['psychic','ghost'],
+      810:['grass'],811:['grass'],812:['grass'],
+      813:['fire'],814:['fire'],815:['fire'],
+      816:['water'],817:['water'],818:['water'],
+      885:['dragon','ghost'],886:['dragon','ghost'],887:['dragon','ghost'],
+      912:['water'],913:['water'],914:['water','fighting'],
+      921:['electric'],922:['electric','fighting'],923:['electric','fighting'],
+      957:['fairy','steel'],958:['fairy','steel'],959:['fairy','steel'],
+      996:['dragon','ice'],997:['dragon','ice'],998:['dragon','ice']
+    });
+    let pokemonTypes = new Map(Object.entries(fallbackTypes).map(([id, names]) => [Number(id),names]));
+    const sampleVariants = [
+      [3,10033,'Mega Venusaur','mega','grass,poison'],
+      [6,10034,'Mega Charizard X','mega','fire,dragon'],
+      [6,10035,'Mega Charizard Y','mega','fire,flying'],
+      [9,10036,'Mega Blastoise','mega','water'],
+      [26,10100,'Alolan Raichu','regional','electric,psychic'],
+      [37,10103,'Alolan Vulpix','regional','ice'],
+      [38,10104,'Alolan Ninetales','regional','ice,fairy'],
+      [65,10037,'Mega Alakazam','mega','psychic'],
+      [74,10109,'Alolan Geodude','regional','rock,electric'],
+      [94,10038,'Mega Gengar','mega','ghost,poison'],
+      [150,10043,'Mega Mewtwo X','mega','psychic,fighting'],
+      [150,10044,'Mega Mewtwo Y','mega','psychic'],
+      [194,10253,'Paldean Wooper','regional','poison,ground'],
+      [282,10051,'Mega Gardevoir','mega','psychic,fairy'],
+      [445,10058,'Mega Garchomp','mega','dragon,ground'],
+      [448,10059,'Mega Lucario','mega','fighting,steel']
+    ];
+    let variantsBySpecies = new Map();
+    let lastFormPayload = null;
+    sampleVariants.forEach(([speciesId,id,name,kind,typeList]) => {
+      const array = variantsBySpecies.get(speciesId) || [];
+      array.push({key:'poke-'+id, speciesId, id, name, kind, types:typeList.split(','), spriteKey:String(id),
+        searchKeys:[normalizeSearch(name)]});
+      variantsBySpecies.set(speciesId,array);
+    });
 
-    function buildSearchIndex(families) {
-      searchEntries = families.flatMap(family => family.members.map(pokemon => {
-        const name = displayName(pokemon.name);
-        return {id: pokemon.id, name, key: normalizeSearch(name), family};
-      }));
-      if (searchInput.value.trim() && document.activeElement === searchInput) showSuggestions();
-    }
-
-    function matchesFor(query) {
-      const text = query.trim();
-      if (!text) return [];
-      const normalized = normalizeSearch(text);
-      const dexSearch = /^#?\d+$/.test(text);
-      const dexDigits = dexSearch ? String(Number(text.replace(/^#/, ''))) : '';
-      if (!normalized) return [];
-      return searchEntries.map(entry => {
-        let rank;
-        if (dexSearch) {
-          const dex = String(entry.id);
-          rank = dex === dexDigits ? 0 : dex.startsWith(dexDigits) ? 1 : Infinity;
-        } else {
-          rank = entry.key === normalized ? 0 : entry.key.startsWith(normalized) ? 1
-            : entry.key.includes(normalized) ? 2 : Infinity;
-        }
-        return {entry, rank};
-      }).filter(result => result.rank !== Infinity)
-        .sort((a, b) => a.rank - b.rank || a.entry.name.localeCompare(b.entry.name) || a.entry.id - b.entry.id)
-        .slice(0, 8).map(result => result.entry);
-    }
-
-    function hideSuggestions() {
-      searchSuggestions.hidden = true;
-      searchSuggestions.replaceChildren();
-      searchInput.setAttribute('aria-expanded', 'false');
-      searchInput.removeAttribute('aria-activedescendant');
-      activeSuggestionIndex = -1;
-      suggestionMatches = [];
-    }
-
-    function highlightSuggestion(index) {
-      activeSuggestionIndex = index;
-      const options = searchSuggestions.querySelectorAll('[role="option"]');
-      options.forEach((option, i) => option.setAttribute('aria-selected', String(i === index)));
-      if (index >= 0 && options[index]) {
-        searchInput.setAttribute('aria-activedescendant', options[index].id);
-        options[index].scrollIntoView({block: 'nearest'});
-      } else {
-        searchInput.removeAttribute('aria-activedescendant');
+    function capitalize(text) { return text ? text[0].toUpperCase() + text.slice(1) : ''; }
+    function labelForForm(speciesRaw, variantRaw, isMega = false) {
+      const base = displayName(speciesRaw);
+      const suffix = variantRaw.startsWith(speciesRaw + '-') ? variantRaw.slice(speciesRaw.length + 1) : variantRaw;
+      if (isMega || suffix === 'mega' || suffix.startsWith('mega-')) {
+        const after = suffix.replace(/^mega-?/, '');
+        return 'Mega ' + base + (after ? ' ' + after.toUpperCase() : '');
       }
+      const regional = {alola:'Alolan',galar:'Galarian',hisui:'Hisuian',paldea:'Paldean'};
+      if (regional[suffix]) return regional[suffix] + ' ' + base;
+      if (suffix.startsWith('paldea-')) return 'Paldean ' + base + ' (' + displayName(suffix.slice(7)) + ')';
+      if (suffix.startsWith('galar-')) return 'Galarian ' + base + ' (' + displayName(suffix.slice(6)) + ')';
+      if (suffix === 'gmax') return 'Gigantamax ' + base;
+      return base + ' (' + displayName(suffix) + (suffix.endsWith('form') || suffix.endsWith('mode') ? '' : ' Form') + ')';
     }
-
-    function showSuggestions() {
-      if (!searchInput.value.trim()) { hideSuggestions(); return; }
-      suggestionMatches = matchesFor(searchInput.value);
-      activeSuggestionIndex = -1;
-      searchSuggestions.replaceChildren();
-      if (!suggestionMatches.length) {
-        const message = fullPokedexReady ? 'No matching Pokémon. Try a different spelling.'
-          : 'No match in the starter selection yet. The complete Pokédex loads when online.';
-        searchSuggestions.appendChild(createElement('div', 'search-empty', message));
-      } else {
-        suggestionMatches.forEach((entry, i) => {
-          const option = createElement('button', 'search-option');
-          option.type = 'button';
-          option.setAttribute('role', 'option');
-          option.setAttribute('aria-selected', 'false');
-          option.id = 'search-option-' + entry.id;
-          option.appendChild(createElement('span', 'search-option-name', entry.name));
-          option.appendChild(createElement('span', 'search-option-dex', dexNumber(entry.id)));
-          option.addEventListener('pointerdown', event => event.preventDefault());
-          option.addEventListener('click', () => selectPokemon(entry));
-          searchSuggestions.appendChild(option);
-        });
-      }
-      searchSuggestions.hidden = false;
-      searchInput.setAttribute('aria-expanded', 'true');
+    function classifyForm(variantName, mega) {
+      if (mega || /-mega(?:-|$)/.test(variantName)) return 'mega';
+      if (/(?:-alola|-galar|-hisui|-paldea)(?:-|$)/.test(variantName)) return 'regional';
+      return 'form';
     }
-
-    function selectPokemon(entry) {
-      searchInput.value = entry.name;
-      hideSuggestions();
-      searchInput.blur();
-      rollCounter++;
-      renderFamily(entry.family, false, entry.id);
-      resultsSection.scrollIntoView({
-        behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
-        block: 'start'
+    function appendVariant(map, variant) {
+      if (!map.has(variant.speciesId)) map.set(variant.speciesId, []);
+      if (!map.get(variant.speciesId).some(existing => existing.key === variant.key)) map.get(variant.speciesId).push(variant);
+    }
+    function convertTypeRows(rows) {
+      const byPokemon = new Map();
+      rows.forEach(([pokemonId, typeId, slot]) => {
+        const name = TYPE_NAMES[Number(typeId)];
+        if (!name) return;
+        if (!byPokemon.has(Number(pokemonId))) byPokemon.set(Number(pokemonId), []);
+        byPokemon.get(Number(pokemonId)).push([Number(slot),name]);
       });
+      return new Map([...byPokemon].map(([id,values]) => [id,values.sort((a,b) => a[0]-b[0]).map(x=>x[1])]));
+    }
+    function parseFormPayload(payload) {
+      const pokemon = payload.pokemon.map(([id,name,speciesId,isDefault]) => ({id:Number(id),name,speciesId:Number(speciesId),isDefault:isDefault==='1'}));
+      const byPokemonId = new Map(pokemon.map(item => [item.id,item]));
+      const bySpecies = new Map();
+      pokemon.forEach(p => {
+        if (!bySpecies.has(p.speciesId)) bySpecies.set(p.speciesId, []);
+        bySpecies.get(p.speciesId).push(p);
+      });
+      const types = convertTypeRows(payload.types);
+      const formTypeMap = convertTypeRows(payload.formTypes);
+      const forms = payload.forms.map(([formId, identifier, suffix, pokemonId, isDefault, isMega, isBattleOnly, formOrder]) => ({
+        formId:Number(formId), identifier, suffix, pokemonId:Number(pokemonId), isDefault:isDefault==='1',
+        isMega:isMega==='1', isBattleOnly:isBattleOnly==='1', formOrder:Number(formOrder)
+      }));
+      const primaryForm = new Map();
+      forms.forEach(form => { if (form.isDefault && !primaryForm.has(form.pokemonId)) primaryForm.set(form.pokemonId, form); });
+      const variants = new Map();
+      const rawSpecies = new Map(searchFamilies.flatMap(f => f.members.map(member => [member.id,member.name])));
+      pokemon.filter(p => !p.isDefault).forEach(p => {
+        const speciesRaw = rawSpecies.get(p.speciesId) || pokemon.find(p2=>p2.id===p.speciesId)?.name || p.name.split('-')[0];
+        const meta = primaryForm.get(p.id);
+        const kind = classifyForm(p.name, Boolean(meta?.isMega));
+        const name = labelForForm(speciesRaw,p.name,kind==='mega');
+        const suffix = p.name.startsWith(speciesRaw + '-') ? p.name.slice(speciesRaw.length + 1) : p.name;
+        appendVariant(variants,{key:'poke-'+p.id, speciesId:p.speciesId, id:p.id, name, kind,
+          types:types.get(p.id) || types.get(p.speciesId) || [], spriteKey:String(p.id),
+          searchKeys:[normalizeSearch(name),normalizeSearch(p.name),normalizeSearch(displayName(speciesRaw)+' '+displayName(suffix))]});
+      });
+      forms.filter(f => !f.isDefault && f.suffix).forEach(form => {
+        const p = byPokemonId.get(form.pokemonId);
+        if (!p) return;
+        // Pokémon-form records cover cosmetic variants that share a Pokémon ID.
+        const speciesRaw = rawSpecies.get(p.speciesId) || p.name.split('-')[0];
+        const name = labelForForm(speciesRaw, form.identifier || speciesRaw + '-' + form.suffix, form.isMega);
+        appendVariant(variants,{key:'cosmetic-'+form.formId, speciesId:p.speciesId,
+          id:p.id, name, kind:classifyForm(form.identifier,form.isMega),
+          types:formTypeMap.get(form.formId) || types.get(p.id) || types.get(p.speciesId) || [],
+          spriteKey:p.id + '-' + form.suffix, cosmetic:true,
+          searchKeys:[normalizeSearch(name),normalizeSearch(form.identifier)]});
+      });
+      for (const entries of variants.values()) entries.sort((a,b) => (a.kind==='mega') - (b.kind==='mega') || a.name.localeCompare(b.name));
+      return {types,variants};
+    }
+    function useFormPayload(payload) {
+      if (!payload || !Array.isArray(payload.pokemon) || payload.pokemon.length < 1000 ||
+          !Array.isArray(payload.types) || !Array.isArray(payload.forms) || !Array.isArray(payload.formTypes)) throw new Error('Form data incomplete');
+      lastFormPayload = payload;
+      const result = parseFormPayload(payload);
+      pokemonTypes = result.types;
+      variantsBySpecies = result.variants;
+      formsReady = true;
+      buildSearchIndex(searchFamilies);
+      renderFamily(history[historyIndex].family,true,history[historyIndex].matchedId,history[historyIndex].matchedVariantKey);
+      renderLegendary(legendaryHistory[legendaryHistoryIndex].family,true,
+        legendaryHistory[legendaryHistoryIndex].matchedId,legendaryHistory[legendaryHistoryIndex].matchedVariantKey);
     }
 
-    searchInput.addEventListener('input', showSuggestions);
-    searchInput.addEventListener('focus', () => { if (searchInput.value.trim()) showSuggestions(); });
-    searchInput.addEventListener('keydown', event => {
-      if (event.key === 'Escape') { hideSuggestions(); return; }
-      if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
-        if (searchSuggestions.hidden) showSuggestions();
-        if (!suggestionMatches.length) return;
-        event.preventDefault();
-        const direction = event.key === 'ArrowDown' ? 1 : -1;
-        const next = activeSuggestionIndex < 0 ? (direction === 1 ? 0 : suggestionMatches.length - 1)
-          : (activeSuggestionIndex + direction + suggestionMatches.length) % suggestionMatches.length;
-        highlightSuggestion(next);
-      }
-    });
-    document.getElementById('searchForm').addEventListener('submit', event => {
-      event.preventDefault();
-      if (!searchInput.value.trim()) { searchInput.focus(); return; }
-      const chosen = activeSuggestionIndex >= 0 && suggestionMatches[activeSuggestionIndex]
-        ? suggestionMatches[activeSuggestionIndex] : matchesFor(searchInput.value)[0];
-      if (chosen) selectPokemon(chosen);
-      else showSuggestions();
-    });
-    document.addEventListener('pointerdown', event => {
-      if (!document.getElementById('searchArea').contains(event.target)) hideSuggestions();
-    });
-    buildSearchIndex(catalog);
+    function speciesTypes(speciesId) { return pokemonTypes.get(speciesId) || []; }
+    function variantsFor(speciesId) { return variantsBySpecies.get(speciesId) || []; }
+    function makeTypeBadges(types) {
+      const group = createElement('div','type-list');
+      if (!types?.length) { group.appendChild(createElement('span','type-unknown',formsReady ? 'Type unavailable' : 'Types loading…')); return group; }
+      types.forEach(type => {
+        const badge = createElement('span','type-badge',capitalize(type));
+        badge.dataset.type = type;
+        group.appendChild(badge);
+      });
+      return group;
+    }
 
-    function imageFor(pokemon) {
-      const art = createElement('div', 'artwork');
+    let speechEnabled = 'speechSynthesis' in window && 'SpeechSynthesisUtterance' in window;
+    function speak(name) {
+      if (!speechEnabled) { liveMessage.textContent = 'Speech is unavailable in this browser.'; return; }
+      const pronunciation = name.replace(/♀/g,' female').replace(/♂/g,' male').replace(/\bMega\b/g,'Mega');
+      try {
+        speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(pronunciation);
+        utterance.lang = 'en-US';
+        utterance.rate = 0.82;
+        utterance.pitch = 1;
+        speechSynthesis.speak(utterance);
+      } catch (_) { liveMessage.textContent = 'Speech could not start on this device.'; }
+    }
+    function speakButton(name, small = false) {
+      const button = createElement('button',small ? 'speak-button speak-small':'speak-button');
+      button.type='button';
+      button.textContent = small ? '♪ Hear' : '♫ Pronounce';
+      button.setAttribute('aria-label','Pronounce '+name);
+      button.title = speechEnabled ? 'Hear '+name+' (computer-generated pronunciation)' : 'Your browser does not support speech';
+      if (!speechEnabled) button.disabled = true;
+      button.addEventListener('click',() => speak(name));
+      return button;
+    }
+
+    const artDialog = document.getElementById('artDialog');
+    const closeArtButton = document.getElementById('closeArt');
+    const modalArt = document.getElementById('modalArt');
+    const modalName = document.getElementById('modalName');
+    const modalTypes = document.getElementById('modalTypes');
+    let lastArtButton = null;
+    function openArt(name, src, types, opener) {
+      lastArtButton = opener;
+      modalName.textContent = name;
+      modalArt.alt = name + ' Pokémon artwork enlarged';
+      modalArt.src = src;
+      modalArt.style.display='block';
+      modalTypes.replaceChildren(makeTypeBadges(types));
+      if (!artDialog.open) artDialog.showModal();
+      closeArtButton.focus();
+    }
+    closeArtButton.addEventListener('click', () => artDialog.close());
+    artDialog.addEventListener('click', event => { if (event.target === artDialog) artDialog.close(); });
+    artDialog.addEventListener('close', () => { modalArt.removeAttribute('src'); lastArtButton?.focus(); });
+    function artCandidates(spriteKey, cosmetic = false) {
+      if (cosmetic) return ['other/home/'+spriteKey+'.png',spriteKey+'.png'];
+      return ART_PATHS.map(dir => dir+spriteKey+'.png');
+    }
+    function imageFor(name, spriteKey, types, small = false, cosmetic = false) {
+      const art = createElement('button',small ? 'artwork artwork-small' : 'artwork');
+      art.type='button';
+      art.setAttribute('aria-label','Enlarge artwork of '+name);
+      art.title='Click to enlarge '+name;
       const img = document.createElement('img');
-      img.alt = displayName(pokemon.name) + ' official Pokémon artwork';
-      img.loading = 'lazy';
-      img.decoding = 'async';
+      img.alt = name + ' Pokémon artwork';
+      img.loading='lazy'; img.decoding='async';
+      const candidates = artCandidates(spriteKey,cosmetic);
       let fallbackIndex = 0;
-      img.src = ART_ROOT + ART_PATHS[fallbackIndex] + pokemon.id + '.png';
-      img.addEventListener('error', () => {
+      img.src = ART_ROOT+candidates[0];
+      img.addEventListener('error',()=>{
         fallbackIndex++;
-        if (fallbackIndex < ART_PATHS.length) img.src = ART_ROOT + ART_PATHS[fallbackIndex] + pokemon.id + '.png';
-        else { img.remove(); art.classList.add('no-art'); }
+        if (fallbackIndex < candidates.length) img.src=ART_ROOT+candidates[fallbackIndex];
+        else {
+          img.remove(); art.classList.add('no-art');
+          art.appendChild(createElement('span','art-unavailable','Artwork unavailable'));
+          art.setAttribute('aria-label','Artwork unavailable for '+name);
+          art.disabled=true;
+        }
       });
       art.appendChild(img);
+      art.addEventListener('click',()=> openArt(name, img.currentSrc||img.src, types, art));
       return art;
     }
-    function pokemonCard(pokemon, stageIndex, cardIndex, family, matchedId = null) {
-      const card = createElement('article','pokemon-card');
-      if (pokemon.id === matchedId) card.classList.add('is-search-match');
-      card.style.setProperty('--tile', TILE_COLORS[(stageIndex * 2 + cardIndex) % TILE_COLORS.length]);
-      card.appendChild(imageFor(pokemon));
-      const copy = createElement('div','pokemon-copy');
-      copy.appendChild(createElement('div','dex',dexNumber(pokemon.id)));
-      copy.appendChild(createElement('h3','',displayName(pokemon.name)));
-      if (pokemon.id === matchedId) copy.appendChild(createElement('span', 'search-match-pill', 'Your search'));
-      if (family.branching && pokemon.parentId && family.byId.has(pokemon.parentId)) {
-        copy.appendChild(createElement('div','parent-note','↳ from ' + displayName(family.byId.get(pokemon.parentId).name)));
-      }
-      card.appendChild(copy);
+
+    function renderVariantItem(variant, matchedKey) {
+      const card = createElement('article','variant-card');
+      if (variant.key === matchedKey) card.classList.add('is-variant-match');
+      card.appendChild(imageFor(variant.name,variant.spriteKey,variant.types,true,Boolean(variant.cosmetic)));
+      const text = createElement('div','variant-info');
+      const badge = createElement('span','variant-kind '+variant.kind+'-kind',
+        variant.kind==='mega' ? 'MEGA EVOLUTION' : variant.kind==='regional' ? 'REGIONAL FORM' : 'ALT. FORM');
+      text.appendChild(badge);
+      text.appendChild(createElement('h4','',variant.name));
+      text.appendChild(makeTypeBadges(variant.types));
+      if (variant.key === matchedKey) text.appendChild(createElement('span','search-match-pill','Your search'));
+      text.appendChild(speakButton(variant.name,true));
+      card.appendChild(text);
       return card;
     }
-    function renderFamily(family, isInitial = false, matchedId = null) {
-      current = family;
-      document.getElementById('familyTitle').replaceChildren(document.createTextNode(displayName(family.root.name) + ' '),createElement('span','faded',family.count === 1 ? 'entry' : 'family'));
-      document.getElementById('countFact').innerHTML = '<strong>' + family.count + '</strong> Pokémon';
-      document.getElementById('stagesFact').innerHTML = '<strong>' + family.stages.length + '</strong> stages';
-      document.getElementById('branchFact').textContent = family.count === 1 ? 'Single-stage Pokémon' : family.branching ? '↗ Branching paths' : '→ Straight-line path';
-      document.getElementById('rollCount').textContent = '/ ' + String(rollCounter).padStart(2,'0');
-      const ids = family.members.map(n => n.id).sort((a,b) => a-b);
-      document.getElementById('dexRange').textContent = 'DEX ' + dexNumber(ids[0]) + ' – ' + dexNumber(ids[ids.length - 1]);
-      document.getElementById('familyNote').textContent = family.count === 1 ? 'This Pokémon does not evolve.' : family.branching ? 'Each branch is included, with its parent labeled.' : 'Every stage, from start to finish.';
-      stageTrack.className = 'track ' + (family.branching ? 'branching' : 'linear');
+    function variantGroup(entries, title, matchedKey) {
+      if (!entries.length) return null;
+      const section = createElement('section','variant-section');
+      const heading = createElement('h4','variant-heading',title+' · '+entries.length);
+      section.appendChild(heading);
+      const grid = createElement('div','variant-grid');
+      const expandForMatch = entries.some(form=>form.key === matchedKey);
+      let expanded = entries.length <= 3 || expandForMatch;
+      const items=[];
+      entries.forEach((entry,i) => {
+        const item = renderVariantItem(entry,matchedKey);
+        item.hidden=!expanded && i >= 3;
+        items.push(item); grid.appendChild(item);
+      });
+      section.appendChild(grid);
+      if (entries.length > 3) {
+        const toggle = createElement('button','show-forms');
+        toggle.type='button';
+        const update = () => { toggle.textContent= expanded ? 'Show fewer forms ↑' : 'Show all '+entries.length+' forms ↓';
+          toggle.setAttribute('aria-expanded',String(expanded));
+          items.forEach((item,i)=>item.hidden=!expanded && i>=3);
+        };
+        toggle.addEventListener('click',()=>{ expanded=!expanded;update(); });
+        update();section.appendChild(toggle);
+      }
+      return section;
+    }
+    function pokemonCard(pokemon, stageIndex, cardIndex, family, matchedId, matchedVariantKey) {
+      const card = createElement('article','pokemon-card');
+      if (pokemon.id === matchedId && !matchedVariantKey) card.classList.add('is-search-match');
+      const colorIndex=(stageIndex*2+cardIndex)%TILE_COLORS.length;
+      card.style.setProperty('--tile',TILE_COLORS[colorIndex]);
+      card.style.setProperty('--tile-dark',DARK_TILE_COLORS[colorIndex]);
+      const primary = createElement('div','pokemon-primary');
+      const name = displayName(pokemon.name);
+      primary.appendChild(imageFor(name,String(pokemon.id),speciesTypes(pokemon.id)));
+      const copy = createElement('div','pokemon-copy');
+      copy.appendChild(createElement('div','dex',dexNumber(pokemon.id)));
+      copy.appendChild(createElement('h3','',name));
+      copy.appendChild(makeTypeBadges(speciesTypes(pokemon.id)));
+      if (pokemon.id === matchedId && !matchedVariantKey) copy.appendChild(createElement('span','search-match-pill','Your search'));
+      if (family.branching && pokemon.parentId && family.byId.has(pokemon.parentId)) {
+        const evolvedFrom = pokemon.id === 980 ? 'Paldean Wooper' :
+          pokemon.id === 863 ? 'Galarian Meowth' : pokemon.id === 862 ? 'Galarian Linoone' :
+          pokemon.id === 866 ? 'Galarian Mr. Mime' : displayName(family.byId.get(pokemon.parentId).name);
+        copy.appendChild(createElement('div','parent-note','↳ from '+evolvedFrom));
+      }
+      copy.appendChild(speakButton(name));
+      primary.appendChild(copy);
+      card.appendChild(primary);
+      const variants=variantsFor(pokemon.id);
+      const ordinary=variants.filter(form=>form.kind!=='mega');
+      const megas=variants.filter(form=>form.kind==='mega');
+      if (variants.length) {
+        const wrapper = createElement('div','variant-shelf');
+        if (ordinary.length) wrapper.appendChild(variantGroup(ordinary,'Other forms',matchedVariantKey));
+        if (megas.length) wrapper.appendChild(variantGroup(megas,'Mega Evolutions',matchedVariantKey));
+        card.appendChild(wrapper);
+      }
+      return card;
+    }
+    function updateNavigation() {
+      previousButton.disabled = historyIndex===0;
+      previousButton.title = historyIndex===0 ? 'No previous family yet' : 'Go back to the last viewed family';
+      nextButton.textContent = historyIndex < history.length-1 ? 'Forward →' : 'Next random →';
+      nextButton.title = historyIndex < history.length-1 ? 'Return to the next family in your history' : 'Roll a new random family';
+      historyText.textContent='Viewed '+(historyIndex+1)+' of '+history.length;
+    }
+    function renderFamily(family, quiet=false, matchedId=null, matchedVariantKey=null) {
+      current=family;
+      document.getElementById('familyTitle').replaceChildren(
+        document.createTextNode(displayName(family.root.name)+' '),
+        createElement('span','faded',family.count===1 ? 'entry' : 'family'));
+      const countFact=document.getElementById('countFact');
+      countFact.replaceChildren(createElement('strong','',String(family.count)),document.createTextNode(' Pokémon'));
+      const stagesFact=document.getElementById('stagesFact');
+      stagesFact.replaceChildren(createElement('strong','',String(family.stages.length)),document.createTextNode(' stages'));
+      document.getElementById('branchFact').textContent=family.count===1 ? 'Single-stage Pokémon' :
+        family.branching ? '↗ Branching paths' : '→ Straight-line path';
+      document.getElementById('rollCount').textContent='/ '+String(historyIndex+1).padStart(2,'0');
+      const ids=family.members.map(n=>n.id).sort((a,b)=>a-b);
+      document.getElementById('dexRange').textContent='DEX '+dexNumber(ids[0])+(ids.length>1?' – '+dexNumber(ids[ids.length-1]):'');
+      const formCount=family.members.reduce((count,p)=>count+variantsFor(p.id).length,0);
+      document.getElementById('formsFact').textContent=formCount ? formCount+' extra forms' : 'Base forms';
+      document.getElementById('familyNote').textContent=formCount ? 'Alternate forms and Megas belong to their original Pokémon.' :
+        family.count===1 ? 'This Pokémon does not evolve.' : family.branching ?
+        'Each evolution branch is shown with its parent.' : 'Every stage, from start to finish.';
+      stageTrack.className='track '+(family.branching?'branching':'linear');
       stageTrack.style.setProperty('--stages',family.stages.length);
-      const fragment = document.createDocumentFragment();
-      family.stages.forEach((members, stageIndex) => {
-        const block = createElement('section','stage-block');
-        const stageHead = createElement('div','stage-heading');
-        const stageLabel = stageIndex === 0 ? 'BASE FORM' : 'EVOLUTION ' + String(stageIndex).padStart(2,'0');
-        stageHead.appendChild(createElement('span','stage-name',String(stageIndex + 1).padStart(2,'0') + ' / ' + stageLabel));
-        stageHead.appendChild(createElement('span','stage-count',members.length + (members.length === 1 ? ' Pokémon' : ' Pokémon')));
-        block.appendChild(stageHead);
-        const cards = createElement('div', 'cards' + (members.length === 1 ? ' single-card' : ''));
-        members.forEach((node, i) => cards.appendChild(pokemonCard(node, stageIndex, i, family, matchedId)));
+      const fragment=document.createDocumentFragment();
+      family.stages.forEach((members,stageIndex)=>{
+        const block=createElement('section','stage-block');
+        const head=createElement('div','stage-heading');
+        head.appendChild(createElement('span','stage-name',
+          String(stageIndex+1).padStart(2,'0')+' / '+(stageIndex===0?'BASE FORM':'EVOLUTION '+String(stageIndex).padStart(2,'0'))));
+        head.appendChild(createElement('span','stage-count',members.length+' Pokémon'));
+        block.appendChild(head);
+        const cards=createElement('div','cards'+(members.length===1?' single-card':''));
+        members.forEach((node,i)=>cards.appendChild(pokemonCard(node,stageIndex,i,family,matchedId,matchedVariantKey)));
         block.appendChild(cards);
         fragment.appendChild(block);
       });
       stageTrack.replaceChildren(fragment);
-      if (!isInitial) {
+      updateNavigation();
+      if (!quiet) {
         stageTrack.classList.remove('reveal');
         void stageTrack.offsetWidth;
         stageTrack.classList.add('reveal');
-        document.getElementById('liveMessage').textContent = 'Showing ' + displayName(family.root.name) + ' family, ' + family.count + ' Pokémon across ' + family.stages.length + ' stages.';
+        liveMessage.textContent='Showing '+displayName(family.root.name)+' family, '+family.count+
+          ' Pokémon across '+family.stages.length+' stages. '+historyText.textContent+'.';
       }
     }
-    function secureRandom(max) {
-      if (globalThis.crypto && globalThis.crypto.getRandomValues) {
-        const array = new Uint32Array(1);
-        const limit = Math.floor(4294967296 / max) * max;
-        do { crypto.getRandomValues(array); } while (array[0] >= limit);
-        return array[0] % max;
+    function scrollToResults() {
+      resultsSection.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'start'});
+    }
+    function showFamily(family,matchedId=null,matchedVariantKey=null) {
+      const here=history[historyIndex];
+      if (here.family.root.id!==family.root.id || here.matchedId!==matchedId || here.matchedVariantKey!==matchedVariantKey) {
+        history.splice(historyIndex+1);
+        history.push({family,matchedId,matchedVariantKey});
+        historyIndex=history.length-1;
+        totalDiscoveries++;
       }
-      return Math.floor(Math.random() * max);
+      renderFamily(family,false,matchedId,matchedVariantKey);
+      scrollToResults();
+    }
+    previousButton.addEventListener('click',()=>{
+      if (historyIndex===0) return;
+      historyIndex--;
+      const entry=history[historyIndex];
+      renderFamily(entry.family,false,entry.matchedId,entry.matchedVariantKey);
+      scrollToResults();
+    });
+    function secureRandom(max) {
+      if (globalThis.crypto?.getRandomValues) {
+        const a=new Uint32Array(1);
+        const limit=Math.floor(4294967296/max)*max;
+        do { crypto.getRandomValues(a); } while (a[0]>=limit);
+        return a[0]%max;
+      }
+      return Math.floor(Math.random()*max);
     }
     function roll() {
-      const recentSet = new Set(recentlySeen);
-      const candidates = catalog.filter(f => f.root.id !== current.root.id && !recentSet.has(String(f.id)));
-      const pool = candidates.length ? candidates : catalog.filter(f => f.root.id !== current.root.id);
+      const recent=new Set(recentlySeen);
+      const candidates=catalog.filter(f=>f.root.id!==current.root.id&&!recent.has(f.root.id));
+      const pool=candidates.length?candidates:catalog.filter(f=>f.root.id!==current.root.id);
       if (!pool.length) return;
-      const next = pool[secureRandom(pool.length)];
-      recentlySeen.push(String(next.id));
-      if (recentlySeen.length > 10) recentlySeen.shift();
-      rollCounter++;
-      renderFamily(next);
-      resultsSection.scrollIntoView({behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth',block:'start'});
+      const chosen=pool[secureRandom(pool.length)];
+      recentlySeen.push(chosen.root.id);
+      if (recentlySeen.length>10) recentlySeen.shift();
+      showFamily(chosen);
     }
-    document.getElementById('rollButton').addEventListener('click',roll);
-    document.getElementById('againButton').addEventListener('click',roll);
-    renderFamily(current,true);
+    nextButton.addEventListener('click',()=>{
+      if (historyIndex<history.length-1) {
+        historyIndex++;
+        const entry=history[historyIndex];
+        renderFamily(entry.family,false,entry.matchedId,entry.matchedVariantKey);
+        scrollToResults();
+      } else roll();
+    });
 
-    function statusMessage(text) { document.getElementById('catalogStatus').textContent = text; }
-    function useSpeciesRows(rows) {
-      const allFamilies = fromRows(rows, true);
-      const families = allFamilies.filter(family => family.count > 1);
-      if (families.length < 150) throw new Error('Pokédex source looks incomplete');
-      catalog = families;
-      fullPokedexReady = true;
-      buildSearchIndex(allFamilies);
-      statusMessage(families.length + ' evolution families unlocked');
+
+    // Legendary history and shuffle are entirely separate from the evolution explorer.
+    function updateLegendaryNavigation() {
+      legendaryPreviousButton.disabled=legendaryHistoryIndex===0;
+      legendaryPreviousButton.title=legendaryHistoryIndex===0?'No previous Legendary yet':'View your previous Legendary';
+      legendaryNextButton.textContent=legendaryHistoryIndex<legendaryHistory.length-1?'Forward →':'Next legendary →';
+      legendaryNextButton.title=legendaryHistoryIndex<legendaryHistory.length-1?'Return to the next Legendary in your history':'Pick another Legendary at random';
+      legendaryHistoryText.textContent='Viewed '+(legendaryHistoryIndex+1)+' of '+legendaryHistory.length;
     }
-    try {
-      const cached = JSON.parse(localStorage.getItem(CACHE_KEY) || 'null');
-      if (cached && Array.isArray(cached.rows) && cached.rows.length > 900) useSpeciesRows(cached.rows);
-    } catch (_) { /* Local storage may be disabled, including in some file previews. */ }
-    fetch(SPECIES_CSV, {cache:'force-cache'})
-      .then(response => { if (!response.ok) throw new Error('Network error'); return response.text(); })
-      .then(text => {
-        const rows = parseSpeciesCSV(text);
-        useSpeciesRows(rows);
-        try { localStorage.setItem(CACHE_KEY, JSON.stringify({rows, updated:Date.now()})); } catch (_) {}
-      })
-      .catch(() => {
-        if (catalog.length < 150) statusMessage(catalog.length + ' fan-favorite families ready');
+    function renderLegendary(family,quiet=false,matchedId=null,matchedVariantKey=null) {
+      currentLegendary=family;
+      const solo=family.count===1;
+      document.getElementById('legendaryTitle').replaceChildren(
+        document.createTextNode(displayName(family.root.name)+' '),
+        createElement('span','faded',solo?'Legendary Pokémon':'legendary line'));
+      document.getElementById('legendaryCountFact').replaceChildren(
+        createElement('strong','',String(family.count)),
+        document.createTextNode(family.count===1?' Legendary':' Legendary Pokémon'));
+      document.getElementById('legendaryStagesFact').textContent=solo?'Does not evolve':
+        family.stages.length+' evolution stages';
+      const formCount=family.members.reduce((n,p)=>n+variantsFor(p.id).length,0);
+      document.getElementById('legendaryFormsFact').textContent=formCount?
+        formCount+' extra '+(formCount===1?'form':'forms'):'Base forms';
+      document.getElementById('legendaryRollCount').textContent='/ '+String(legendaryHistoryIndex+1).padStart(2,'0');
+      const ids=family.members.map(p=>p.id).sort((a,b)=>a-b);
+      document.getElementById('legendaryDexRange').textContent='DEX '+dexNumber(ids[0])+
+        (ids.length>1?' – '+dexNumber(ids[ids.length-1]):'');
+      document.getElementById('legendaryNote').textContent=solo?
+        'This Legendary Pokémon does not evolve. Its forms and Megas are shown below when available.':
+        'A rare Legendary evolution line. All its stages and branching paths appear here.';
+      legendaryTrack.className='track legendary-track '+(solo?'linear single-legend':family.branching?'branching':'linear');
+      legendaryTrack.style.setProperty('--stages',family.stages.length);
+      const fragment=document.createDocumentFragment();
+      family.stages.forEach((members,stageIndex)=>{
+        const block=createElement('section','stage-block');
+        const head=createElement('div','stage-heading');
+        head.appendChild(createElement('span','stage-name',
+          String(stageIndex+1).padStart(2,'0')+' / '+(solo?'LEGENDARY POKÉMON':stageIndex===0?'BASE FORM':'EVOLUTION '+String(stageIndex).padStart(2,'0'))));
+        head.appendChild(createElement('span','stage-count',members.length+' Pokémon'));
+        block.appendChild(head);
+        const cards=createElement('div','cards'+(members.length===1?' single-card':''));
+        members.forEach((pokemon,i)=>cards.appendChild(pokemonCard(pokemon,stageIndex,i,family,matchedId,matchedVariantKey)));
+        block.appendChild(cards);
+        fragment.appendChild(block);
       });
+      legendaryTrack.replaceChildren(fragment);
+      updateLegendaryNavigation();
+      if (!quiet) {
+        legendaryTrack.classList.remove('reveal');
+        void legendaryTrack.offsetWidth;
+        legendaryTrack.classList.add('reveal');
+        legendaryLiveMessage.textContent='Showing Legendary '+displayName(family.root.name)+
+          ', '+family.count+' Pokémon. '+legendaryHistoryText.textContent+'.';
+      }
+    }
+    function scrollToLegendary() {
+      legendaryResults.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'start'});
+    }
+    function showLegendary(family,matchedId=null,matchedVariantKey=null) {
+      const here=legendaryHistory[legendaryHistoryIndex];
+      if (here.family.root.id!==family.root.id||here.matchedId!==matchedId||here.matchedVariantKey!==matchedVariantKey) {
+        legendaryHistory.splice(legendaryHistoryIndex+1);
+        legendaryHistory.push({family,matchedId,matchedVariantKey});
+        legendaryHistoryIndex=legendaryHistory.length-1;
+      }
+      renderLegendary(family,false,matchedId,matchedVariantKey);
+      scrollToLegendary();
+    }
+    legendaryPreviousButton.addEventListener('click',()=>{
+      if (!legendaryHistoryIndex) return;
+      legendaryHistoryIndex--;
+      const entry=legendaryHistory[legendaryHistoryIndex];
+      renderLegendary(entry.family,false,entry.matchedId,entry.matchedVariantKey);
+      scrollToLegendary();
+    });
+    function rollLegendary() {
+      const recent=new Set(legendaryRecentlySeen);
+      const candidates=legendaryCatalog.filter(f=>f.root.id!==currentLegendary.root.id&&!recent.has(f.root.id));
+      const pool=candidates.length?candidates:legendaryCatalog.filter(f=>f.root.id!==currentLegendary.root.id);
+      if (!pool.length) return;
+      const next=pool[secureRandom(pool.length)];
+      legendaryRecentlySeen.push(next.root.id);
+      if (legendaryRecentlySeen.length>10) legendaryRecentlySeen.shift();
+      showLegendary(next);
+    }
+    legendaryNextButton.addEventListener('click',()=>{
+      if (legendaryHistoryIndex<legendaryHistory.length-1) {
+        legendaryHistoryIndex++;
+        const entry=legendaryHistory[legendaryHistoryIndex];
+        renderLegendary(entry.family,false,entry.matchedId,entry.matchedVariantKey);
+        scrollToLegendary();
+      } else rollLegendary();
+    });
+
+    function buildSearchIndex(families) {
+      searchEntries=[];
+      families.forEach(family=>family.members.forEach(pokemon=>{
+        const name=displayName(pokemon.name);
+        searchEntries.push({id:pokemon.id,name,keys:[normalizeSearch(name),normalizeSearch(pokemon.name)],family,formKey:null,kind:null});
+        variantsFor(pokemon.id).forEach(form=>{
+          searchEntries.push({id:pokemon.id,name:form.name,keys:form.searchKeys,family,formKey:form.key,kind:form.kind});
+        });
+      }));
+      legendarySearchEntries=searchEntries.filter(entry=>legendaryIds.has(entry.id));
+      if (searchInput.value.trim()&&document.activeElement===searchInput) showSuggestions();
+      if (legendarySearchInput.value.trim()&&document.activeElement===legendarySearchInput) showLegendarySuggestions();
+    }
+    function matchesFor(query, entries=searchEntries) {
+      const text=query.trim();
+      if (!text) return [];
+      const normalized=normalizeSearch(text);
+      const dexSearch=/^#?\d+$/.test(text);
+      const dexDigits=dexSearch?String(Number(text.replace(/^#/,''))):'';
+      if (!normalized) return [];
+      return entries.map(entry=>{
+        let rank=Infinity;
+        if (dexSearch) {
+          const dex=String(entry.id);
+          if (dex===dexDigits) rank=entry.formKey?1:0;
+          else if (dex.startsWith(dexDigits)) rank=entry.formKey?3:2;
+        } else {
+          for (const key of entry.keys) {
+            rank=Math.min(rank,key===normalized?0:key.startsWith(normalized)?1:key.includes(normalized)?2:Infinity);
+          }
+        }
+        return {entry,rank};
+      }).filter(({rank})=>Number.isFinite(rank))
+        .sort((a,b)=>a.rank-b.rank||a.entry.name.localeCompare(b.entry.name)||a.entry.id-b.entry.id)
+        .slice(0,9).map(x=>x.entry);
+    }
+    function hideSuggestions() {
+      searchSuggestions.hidden=true;
+      searchSuggestions.replaceChildren();
+      searchInput.setAttribute('aria-expanded','false');
+      searchInput.removeAttribute('aria-activedescendant');
+      activeSuggestionIndex=-1;
+      suggestionMatches=[];
+    }
+    function highlightSuggestion(index) {
+      activeSuggestionIndex=index;
+      const options=searchSuggestions.querySelectorAll('[role="option"]');
+      options.forEach((option,i)=>option.setAttribute('aria-selected',String(i===index)));
+      if (index>=0&&options[index]) {
+        searchInput.setAttribute('aria-activedescendant',options[index].id);
+        options[index].scrollIntoView({block:'nearest'});
+      } else searchInput.removeAttribute('aria-activedescendant');
+    }
+    function showSuggestions() {
+      if (!searchInput.value.trim()) { hideSuggestions(); return; }
+      suggestionMatches=matchesFor(searchInput.value);
+      activeSuggestionIndex=-1;
+      searchSuggestions.replaceChildren();
+      if (!suggestionMatches.length) {
+        const message=fullPokedexReady?'No matching Pokémon. Try a different spelling.':
+          'No match in the starter selection. The full Pokédex loads online.';
+        searchSuggestions.appendChild(createElement('div','search-empty',message));
+      } else suggestionMatches.forEach((entry,i)=>{
+        const option=createElement('button','search-option');
+        option.type='button'; option.setAttribute('role','option');
+        option.setAttribute('aria-selected','false');
+        option.id='search-option-'+i;
+        option.appendChild(createElement('span','search-option-name',entry.name));
+        option.appendChild(createElement('span','search-option-dex',dexNumber(entry.id)+(entry.kind?' · '+entry.kind:'').replace(/\bmega\b/,'Mega')));
+        option.addEventListener('pointerdown',event=>event.preventDefault());
+        option.addEventListener('click',()=>selectPokemon(entry));
+        searchSuggestions.appendChild(option);
+      });
+      searchSuggestions.hidden=false;
+      searchInput.setAttribute('aria-expanded','true');
+    }
+    function selectPokemon(entry) {
+      searchInput.value=entry.name;
+      hideSuggestions();
+      searchInput.blur();
+      if (legendaryIds.has(entry.id)) {
+        showLegendary(legendaryFamilyBySpecies.get(entry.id)||entry.family,entry.id,entry.formKey);
+      } else showFamily(entry.family,entry.id,entry.formKey);
+    }
+    searchInput.addEventListener('input',showSuggestions);
+    searchInput.addEventListener('focus',()=>{ if (searchInput.value.trim()) showSuggestions(); });
+    searchInput.addEventListener('keydown',event=>{
+      if (event.key==='Escape') { hideSuggestions(); return; }
+      if (event.key==='ArrowDown'||event.key==='ArrowUp') {
+        if (searchSuggestions.hidden) showSuggestions();
+        if (!suggestionMatches.length) return;
+        event.preventDefault();
+        const direction=event.key==='ArrowDown'?1:-1;
+        const index=activeSuggestionIndex<0?(direction===1?0:suggestionMatches.length-1):
+          (activeSuggestionIndex+direction+suggestionMatches.length)%suggestionMatches.length;
+        highlightSuggestion(index);
+      }
+    });
+    document.getElementById('searchForm').addEventListener('submit',event=>{
+      event.preventDefault();
+      if (!searchInput.value.trim()) { searchInput.focus(); return; }
+      const chosen=activeSuggestionIndex>=0&&suggestionMatches[activeSuggestionIndex]?
+        suggestionMatches[activeSuggestionIndex]:matchesFor(searchInput.value)[0];
+      if (chosen) selectPokemon(chosen); else showSuggestions();
+    });
+    document.addEventListener('pointerdown',event=>{
+      if (!document.getElementById('searchArea').contains(event.target)) hideSuggestions();
+    });
+
+    // Search remains global above; this additional autocomplete is Legendary-only.
+    function hideLegendarySuggestions() {
+      legendarySuggestions.hidden=true;
+      legendarySuggestions.replaceChildren();
+      legendarySearchInput.setAttribute('aria-expanded','false');
+      legendarySearchInput.removeAttribute('aria-activedescendant');
+      legendaryActiveIndex=-1;
+      legendaryMatches=[];
+    }
+    function highlightLegendarySuggestion(index) {
+      legendaryActiveIndex=index;
+      const options=legendarySuggestions.querySelectorAll('[role="option"]');
+      options.forEach((option,i)=>option.setAttribute('aria-selected',String(index===i)));
+      if (index>=0&&options[index]) {
+        legendarySearchInput.setAttribute('aria-activedescendant',options[index].id);
+        options[index].scrollIntoView({block:'nearest'});
+      } else legendarySearchInput.removeAttribute('aria-activedescendant');
+    }
+    function showLegendarySuggestions() {
+      if (!legendarySearchInput.value.trim()) { hideLegendarySuggestions(); return; }
+      legendaryMatches=matchesFor(legendarySearchInput.value,legendarySearchEntries);
+      legendaryActiveIndex=-1;
+      legendarySuggestions.replaceChildren();
+      if (!legendaryMatches.length) {
+        legendarySuggestions.appendChild(createElement('div','search-empty',fullPokedexReady?
+          'No matching Legendary Pokémon. Mythical Pokémon are not in this archive.':
+          'No match in the offline Legendary selection. The full archive loads online.'));
+      } else legendaryMatches.forEach((entry,i)=>{
+        const option=createElement('button','search-option');
+        option.type='button';
+        option.setAttribute('role','option');
+        option.setAttribute('aria-selected','false');
+        option.id='legendary-option-'+i;
+        option.appendChild(createElement('span','search-option-name',entry.name));
+        option.appendChild(createElement('span','search-option-dex',dexNumber(entry.id)+(entry.kind?' · '+entry.kind:'')));
+        option.addEventListener('pointerdown',event=>event.preventDefault());
+        option.addEventListener('click',()=>selectLegendary(entry));
+        legendarySuggestions.appendChild(option);
+      });
+      legendarySuggestions.hidden=false;
+      legendarySearchInput.setAttribute('aria-expanded','true');
+    }
+    function selectLegendary(entry) {
+      legendarySearchInput.value=entry.name;
+      hideLegendarySuggestions();
+      legendarySearchInput.blur();
+      const family=legendaryFamilyBySpecies.get(entry.id);
+      if (family) showLegendary(family,entry.id,entry.formKey);
+    }
+    legendarySearchInput.addEventListener('input',showLegendarySuggestions);
+    legendarySearchInput.addEventListener('focus',()=>{
+      if (legendarySearchInput.value.trim()) showLegendarySuggestions();
+    });
+    legendarySearchInput.addEventListener('keydown',event=>{
+      if (event.key==='Escape') { hideLegendarySuggestions(); return; }
+      if (event.key==='ArrowDown'||event.key==='ArrowUp') {
+        if (legendarySuggestions.hidden) showLegendarySuggestions();
+        if (!legendaryMatches.length) return;
+        event.preventDefault();
+        const direction=event.key==='ArrowDown'?1:-1;
+        const index=legendaryActiveIndex<0?(direction===1?0:legendaryMatches.length-1):
+          (legendaryActiveIndex+direction+legendaryMatches.length)%legendaryMatches.length;
+        highlightLegendarySuggestion(index);
+      }
+    });
+    document.getElementById('legendarySearchForm').addEventListener('submit',event=>{
+      event.preventDefault();
+      if (!legendarySearchInput.value.trim()) { legendarySearchInput.focus(); return; }
+      const chosen=legendaryActiveIndex>=0&&legendaryMatches[legendaryActiveIndex]?
+        legendaryMatches[legendaryActiveIndex]:matchesFor(legendarySearchInput.value,legendarySearchEntries)[0];
+      if (chosen) selectLegendary(chosen); else showLegendarySuggestions();
+    });
+    document.addEventListener('pointerdown',event=>{
+      if (!document.getElementById('legendarySearchArea').contains(event.target)) hideLegendarySuggestions();
+    });
+    buildSearchIndex(searchFamilies);
+    renderFamily(current,true);
+    renderLegendary(currentLegendary,true);
+    document.getElementById('legendaryCatalogCount').textContent=legendaryIds.size+' Legendary Pokémon ready';
+
+    function statusMessage(text) { document.getElementById('catalogStatus').textContent=text; }
+    function useSpeciesRows(rows) {
+      const allFamilies=fromRows(rows,true);
+      const families=allFamilies.filter(f=>f.count>1);
+      if (families.length<150) throw new Error('Incomplete Pokédex');
+      const legendaryFamilies=legendaryFromRows(rows);
+      if (!legendaryFamilies.length) throw new Error('Legendary listings unavailable');
+      const legendarySpeciesIds=new Set(legendaryFamilies.flatMap(f=>f.members.map(p=>p.id)));
+      catalog=families.filter(f=>!f.members.some(p=>legendarySpeciesIds.has(p.id)));
+      legendaryCatalog=legendaryFamilies;
+      legendaryIds=legendarySpeciesIds;
+      legendaryFamilyBySpecies=new Map(legendaryCatalog.flatMap(f=>f.members.map(p=>[p.id,f])));
+      searchFamilies=allFamilies;
+      fullPokedexReady=true;
+      buildSearchIndex(allFamilies);
+      document.getElementById('legendaryCatalogCount').textContent=legendarySpeciesIds.size+' Legendary Pokémon to discover';
+      renderLegendary(legendaryHistory[legendaryHistoryIndex].family,true,
+        legendaryHistory[legendaryHistoryIndex].matchedId,legendaryHistory[legendaryHistoryIndex].matchedVariantKey);
+      // Rebuild form display names once the complete species names are known.
+      if (lastFormPayload) useFormPayload(lastFormPayload);
+      statusMessage(families.length+' evolution families unlocked');
+    }
+    const cachedSpecies=safeGet(SPECIES_CACHE_KEY);
+    if (cachedSpecies) {
+      try {
+        const cached=JSON.parse(cachedSpecies);
+        if (Array.isArray(cached.rows)&&cached.rows.length>900&&cached.rows[0]?.length>=5) useSpeciesRows(cached.rows);
+      } catch (_) { /* Refresh from source below. */ }
+    }
+    fetch(SPECIES_CSV,{cache:'force-cache'})
+      .then(response=>{ if (!response.ok) throw new Error('Pokédex unavailable');return response.text(); })
+      .then(csv=>{
+        const rows=parseSpeciesCSV(csv);
+        useSpeciesRows(rows);
+        safeSet(SPECIES_CACHE_KEY,JSON.stringify({rows,updated:Date.now()}));
+      }).catch(()=>{ if (!fullPokedexReady) statusMessage(catalog.length+' fan-favorite families ready'); });
+
+    const cachedForms=safeGet(FORMS_CACHE_KEY);
+    if (cachedForms) {
+      try { useFormPayload(JSON.parse(cachedForms)); } catch (_) { /* Try online. */ }
+    }
+    // One bulk request per table, not hundreds of individual Pokémon requests.
+    Promise.all([
+      ['pokemon.csv',['id','identifier','species_id','is_default']],
+      ['pokemon_types.csv',['pokemon_id','type_id','slot']],
+      ['pokemon_forms.csv',['id','identifier','form_identifier','pokemon_id','is_default','is_mega','is_battle_only','form_order']],
+      ['pokemon_form_types.csv',['pokemon_form_id','type_id','slot']]
+    ].map(async ([file,columns])=>{
+      const response=await fetch(DATA_ROOT+file,{cache:'force-cache'});
+      if (!response.ok) throw new Error(file+' unavailable');
+      return parseTable(await response.text(),columns);
+    })).then(([pokemon,types,forms,formTypes])=>{
+      const payload={pokemon,types,forms,formTypes};
+      useFormPayload(payload);
+      safeSet(FORMS_CACHE_KEY,JSON.stringify(payload));
+    }).catch(()=>{ /* Offline starter entries retain their example types / forms. */ });
   </script>
 </body>
 </html>
