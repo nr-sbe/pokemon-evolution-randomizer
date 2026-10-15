@@ -45,6 +45,26 @@
     .hero-tags { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 29px; }
     .hero-tag { font-size: 12px; font-weight: 850; color: #45554d; padding: 10px 12px; border-radius: 999px; background: #e8eee5; }
     .hero-tag .check { color: #2c997a; margin-right: 5px; font-weight: 900; }
+    /* Search stays separate from the random-roll action and works with the full Pokédex. */
+    .search-area { max-width: 510px; margin-top: 29px; position: relative; z-index: 5; }
+    .search-label { display: block; margin-bottom: 11px; font-size: 11px; font-weight: 1000; letter-spacing: .12em; color: #52645c; text-transform: uppercase; }
+    .search-wrap { position: relative; }
+    .search-form { display: flex; align-items: center; gap: 8px; min-height: 60px; padding: 6px 6px 6px 16px; border: 1.5px solid var(--ink); border-radius: 16px; background: var(--white); box-shadow: 4px 4px 0 rgba(29,39,50,.1); }
+    .search-form:focus-within { outline: 3px solid #7163ee; outline-offset: 3px; }
+    .search-icon { display: grid; place-items: center; color: #72837b; flex: none; }
+    .search-icon svg { width: 21px; height: 21px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; }
+    .search-input { flex: 1; min-width: 0; width: 100%; padding: 11px 0; border: 0; outline: none; background: transparent; color: var(--ink); font-size: 14px; font-weight: 700; }
+    .search-input::placeholder { color: #87958e; font-weight: 600; }
+    .search-go { flex: none; padding: 13px 16px; border: 0; border-radius: 11px; background: var(--ink); color: white; font-size: 12px; font-weight: 950; }
+    .search-go:hover { background: #344655; }
+    .search-hint { margin: 11px 0 0; color: var(--muted); font-size: 11px; font-weight: 650; line-height: 1.5; }
+    .search-suggestions { position: absolute; z-index: 20; top: calc(100% + 9px); left: 0; right: 0; overflow-y: auto; max-height: min(380px, 54vh); padding: 7px; border: 1px solid var(--border); border-radius: 16px; background: white; box-shadow: 0 21px 45px rgba(29,39,50,.17); }
+    .search-suggestions[hidden] { display: none; }
+    .search-option { display: flex; align-items: center; justify-content: space-between; width: 100%; gap: 12px; padding: 11px 12px; border: 0; border-radius: 10px; color: var(--ink); background: transparent; text-align: left; }
+    .search-option:hover, .search-option[aria-selected="true"] { background: #e8f6e7; }
+    .search-option-name { font-size: 14px; font-weight: 850; }
+    .search-option-dex { font-size: 11px; color: #6f807a; font-weight: 800; font-variant-numeric: tabular-nums; }
+    .search-empty { padding: 13px; color: var(--muted); font-size: 13px; line-height: 1.5; }
     .action-card { position: relative; overflow: hidden; isolation: isolate; min-height: 360px; background: var(--mint); border: 2px solid var(--ink); border-radius: 30px; box-shadow: 9px 9px 0 var(--ink); padding: clamp(24px, 3vw, 38px); display: flex; align-items: stretch; }
     .action-card::before { content: ""; position: absolute; width: 230px; height: 230px; border-radius: 50%; border: 28px solid rgba(29, 39, 50, .064); top: -76px; right: -77px; z-index: -1; }
     .action-card::after { content: ""; position: absolute; width: 142px; height: 142px; border-radius: 50%; border: 23px solid rgba(29, 39, 50, .048); bottom: -65px; right: -42px; z-index: -1; }
@@ -87,6 +107,8 @@
     .cards { display: grid; gap: 13px; }
     .pokemon-card { background: var(--tile, #eef5fc); border: 1px solid rgba(30,60,58,.06); border-radius: 20px; overflow: hidden; min-width: 0; padding: 15px 15px 17px; transition: transform .2s ease; }
     .pokemon-card:hover { transform: translateY(-4px); }
+    .pokemon-card.is-search-match { outline: 3px solid #39aa88; outline-offset: -3px; }
+    .search-match-pill { display: inline-block; margin-top: 10px; padding: 5px 8px; border-radius: 999px; background: #ddf4e5; color: #176e55; font-size: 10px; font-weight: 1000; letter-spacing: .06em; text-transform: uppercase; }
     .artwork { display: grid; place-items: center; aspect-ratio: 1.1 / 1; position: relative; min-height: 0; }
     .artwork::before { content: ""; position: absolute; width: 69%; aspect-ratio: 1; background: #fff; border-radius: 50%; opacity: .45; }
     .artwork img { position: relative; display: block; width: 100%; height: 100%; max-height: 205px; object-fit: contain; filter: drop-shadow(0 9px 7px rgba(40,49,45,.12)); transition: transform .25s ease; }
@@ -132,6 +154,10 @@
       .hero-copy > p.description { font-size: 15px; max-width: 390px; }
       .hero-tags { margin-top: 19px; }
       .hero-tag { padding: 8px 10px; font-size: 11px; }
+      .search-area { margin-top: 24px; }
+      .search-form { min-height: 56px; }
+      .search-input { font-size: 13px; }
+      .search-go { padding: 12px 13px; }
       .action-card { min-height: 280px; padding: 23px; box-shadow: 6px 6px 0 var(--ink); }
       .action-card h2 { font-size: 61px; margin: 24px 0 5px; }
       .action-description { margin-bottom: 20px !important; }
@@ -162,6 +188,9 @@
     }
     @media (max-width: 390px) {
       .top-status { font-size: 9px; }
+      .search-form { padding-left: 11px; gap: 6px; }
+      .search-input { font-size: 12px; }
+      .search-go { padding-inline: 10px; }
       .track.linear .pokemon-card { grid-template-columns: 108px minmax(0,1fr); }
       .track.linear .pokemon-copy h3 { font-size: 22px; }
       .track.branching .pokemon-copy h3 { font-size: 15px; }
@@ -187,6 +216,18 @@
         <h1>The whole<br><span class="highlight">evolution</span><br>in one click<span class="period">.</span></h1>
         <p class="description">Meet an entire Pokémon evolution family at random. Every stage, every branching path, and all the official artwork.</p>
         <div class="hero-tags"><span class="hero-tag"><span class="check">✓</span> Every branch included</span><span class="hero-tag"><span class="check">✓</span> All generations</span></div>
+        <div class="search-area" id="searchArea">
+          <label class="search-label" for="pokemonSearch">Find a Pokémon</label>
+          <div class="search-wrap">
+            <form class="search-form" id="searchForm" role="search" autocomplete="off">
+              <span class="search-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"></circle><path d="m16 16 5 5"></path></svg></span>
+              <input class="search-input" id="pokemonSearch" name="pokemon" type="search" placeholder="Try Pikachu, Eevee, or Wooper…" spellcheck="false" autocapitalize="off" autocomplete="off" role="combobox" aria-autocomplete="list" aria-controls="searchSuggestions" aria-expanded="false" aria-haspopup="listbox" aria-describedby="searchHint">
+              <button class="search-go" type="submit">Find ↗</button>
+            </form>
+            <div class="search-suggestions" id="searchSuggestions" role="listbox" aria-label="Matching Pokémon" hidden></div>
+          </div>
+          <p class="search-hint" id="searchHint">Type a name to see suggestions. Use ↑ ↓ and Enter to choose.</p>
+        </div>
       </div>
       <div class="action-card">
         <div class="action-inner">
@@ -307,8 +348,8 @@
       if (text !== undefined) element.textContent = text;
       return element;
     }
-    function assembleFamily(id, nodes) {
-      if (nodes.length < 2) return null;
+    function assembleFamily(id, nodes, includeSingles = false) {
+      if (nodes.length < (includeSingles ? 1 : 2)) return null;
       const byId = new Map(nodes.map(n => [n.id, n]));
       const depths = new Map();
       function depthOf(node, visiting = new Set()) {
@@ -329,19 +370,19 @@
       });
       const stages = [...stageMap.entries()].sort((a,b) => a[0] - b[0]).map(([,members]) => members.sort((a,b) => a.id - b.id));
       const roots = stages[0];
-      if (!roots || !stages[1]) return null;
+      if (!roots || (!includeSingles && !stages[1])) return null;
       const childCounts = new Map();
       nodes.forEach(node => { if (byId.has(node.parentId)) childCounts.set(node.parentId, (childCounts.get(node.parentId) || 0) + 1); });
       return { id, stages, byId, root: roots[0], count: nodes.length, branching: [...childCounts.values()].some(count => count > 1) || stages.some(stage => stage.length > 1), members: nodes };
     }
-    function fromRows(rows) {
+    function fromRows(rows, includeSingles = false) {
       const chains = new Map();
       rows.forEach(([id,name,parentId,chainId]) => {
         if (!Number.isInteger(id) || id < 1 || !Number.isInteger(chainId) || chainId < 1 || !name) return;
         if (!chains.has(chainId)) chains.set(chainId, []);
         chains.get(chainId).push({id, name, parentId: parentId || null});
       });
-      return [...chains].map(([id, nodes]) => assembleFamily(id, nodes)).filter(Boolean);
+      return [...chains].map(([id, nodes]) => assembleFamily(id, nodes, includeSingles)).filter(Boolean);
     }
     function parseSpeciesCSV(csv) {
       const lines = csv.trim().split(/\r?\n/);
@@ -364,6 +405,135 @@
     const recentlySeen = [];
     const stageTrack = document.getElementById('stageTrack');
     const resultsSection = document.getElementById('results');
+    const searchInput = document.getElementById('pokemonSearch');
+    const searchSuggestions = document.getElementById('searchSuggestions');
+    let searchEntries = [];
+    let suggestionMatches = [];
+    let activeSuggestionIndex = -1;
+    let fullPokedexReady = false;
+
+    function normalizeSearch(text) {
+      return String(text).normalize('NFKD').replace(/[\u0300-\u036f]/g, '')
+        .replace(/♀/g, 'f').replace(/♂/g, 'm')
+        .toLowerCase().replace(/[^a-z0-9]/g, '');
+    }
+
+    function buildSearchIndex(families) {
+      searchEntries = families.flatMap(family => family.members.map(pokemon => {
+        const name = displayName(pokemon.name);
+        return {id: pokemon.id, name, key: normalizeSearch(name), family};
+      }));
+      if (searchInput.value.trim() && document.activeElement === searchInput) showSuggestions();
+    }
+
+    function matchesFor(query) {
+      const text = query.trim();
+      if (!text) return [];
+      const normalized = normalizeSearch(text);
+      const dexSearch = /^#?\d+$/.test(text);
+      const dexDigits = dexSearch ? String(Number(text.replace(/^#/, ''))) : '';
+      if (!normalized) return [];
+      return searchEntries.map(entry => {
+        let rank;
+        if (dexSearch) {
+          const dex = String(entry.id);
+          rank = dex === dexDigits ? 0 : dex.startsWith(dexDigits) ? 1 : Infinity;
+        } else {
+          rank = entry.key === normalized ? 0 : entry.key.startsWith(normalized) ? 1
+            : entry.key.includes(normalized) ? 2 : Infinity;
+        }
+        return {entry, rank};
+      }).filter(result => result.rank !== Infinity)
+        .sort((a, b) => a.rank - b.rank || a.entry.name.localeCompare(b.entry.name) || a.entry.id - b.entry.id)
+        .slice(0, 8).map(result => result.entry);
+    }
+
+    function hideSuggestions() {
+      searchSuggestions.hidden = true;
+      searchSuggestions.replaceChildren();
+      searchInput.setAttribute('aria-expanded', 'false');
+      searchInput.removeAttribute('aria-activedescendant');
+      activeSuggestionIndex = -1;
+      suggestionMatches = [];
+    }
+
+    function highlightSuggestion(index) {
+      activeSuggestionIndex = index;
+      const options = searchSuggestions.querySelectorAll('[role="option"]');
+      options.forEach((option, i) => option.setAttribute('aria-selected', String(i === index)));
+      if (index >= 0 && options[index]) {
+        searchInput.setAttribute('aria-activedescendant', options[index].id);
+        options[index].scrollIntoView({block: 'nearest'});
+      } else {
+        searchInput.removeAttribute('aria-activedescendant');
+      }
+    }
+
+    function showSuggestions() {
+      if (!searchInput.value.trim()) { hideSuggestions(); return; }
+      suggestionMatches = matchesFor(searchInput.value);
+      activeSuggestionIndex = -1;
+      searchSuggestions.replaceChildren();
+      if (!suggestionMatches.length) {
+        const message = fullPokedexReady ? 'No matching Pokémon. Try a different spelling.'
+          : 'No match in the starter selection yet. The complete Pokédex loads when online.';
+        searchSuggestions.appendChild(createElement('div', 'search-empty', message));
+      } else {
+        suggestionMatches.forEach((entry, i) => {
+          const option = createElement('button', 'search-option');
+          option.type = 'button';
+          option.setAttribute('role', 'option');
+          option.setAttribute('aria-selected', 'false');
+          option.id = 'search-option-' + entry.id;
+          option.appendChild(createElement('span', 'search-option-name', entry.name));
+          option.appendChild(createElement('span', 'search-option-dex', dexNumber(entry.id)));
+          option.addEventListener('pointerdown', event => event.preventDefault());
+          option.addEventListener('click', () => selectPokemon(entry));
+          searchSuggestions.appendChild(option);
+        });
+      }
+      searchSuggestions.hidden = false;
+      searchInput.setAttribute('aria-expanded', 'true');
+    }
+
+    function selectPokemon(entry) {
+      searchInput.value = entry.name;
+      hideSuggestions();
+      searchInput.blur();
+      rollCounter++;
+      renderFamily(entry.family, false, entry.id);
+      resultsSection.scrollIntoView({
+        behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
+        block: 'start'
+      });
+    }
+
+    searchInput.addEventListener('input', showSuggestions);
+    searchInput.addEventListener('focus', () => { if (searchInput.value.trim()) showSuggestions(); });
+    searchInput.addEventListener('keydown', event => {
+      if (event.key === 'Escape') { hideSuggestions(); return; }
+      if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+        if (searchSuggestions.hidden) showSuggestions();
+        if (!suggestionMatches.length) return;
+        event.preventDefault();
+        const direction = event.key === 'ArrowDown' ? 1 : -1;
+        const next = activeSuggestionIndex < 0 ? (direction === 1 ? 0 : suggestionMatches.length - 1)
+          : (activeSuggestionIndex + direction + suggestionMatches.length) % suggestionMatches.length;
+        highlightSuggestion(next);
+      }
+    });
+    document.getElementById('searchForm').addEventListener('submit', event => {
+      event.preventDefault();
+      if (!searchInput.value.trim()) { searchInput.focus(); return; }
+      const chosen = activeSuggestionIndex >= 0 && suggestionMatches[activeSuggestionIndex]
+        ? suggestionMatches[activeSuggestionIndex] : matchesFor(searchInput.value)[0];
+      if (chosen) selectPokemon(chosen);
+      else showSuggestions();
+    });
+    document.addEventListener('pointerdown', event => {
+      if (!document.getElementById('searchArea').contains(event.target)) hideSuggestions();
+    });
+    buildSearchIndex(catalog);
 
     function imageFor(pokemon) {
       const art = createElement('div', 'artwork');
@@ -381,29 +551,31 @@
       art.appendChild(img);
       return art;
     }
-    function pokemonCard(pokemon, stageIndex, cardIndex, family) {
+    function pokemonCard(pokemon, stageIndex, cardIndex, family, matchedId = null) {
       const card = createElement('article','pokemon-card');
+      if (pokemon.id === matchedId) card.classList.add('is-search-match');
       card.style.setProperty('--tile', TILE_COLORS[(stageIndex * 2 + cardIndex) % TILE_COLORS.length]);
       card.appendChild(imageFor(pokemon));
       const copy = createElement('div','pokemon-copy');
       copy.appendChild(createElement('div','dex',dexNumber(pokemon.id)));
       copy.appendChild(createElement('h3','',displayName(pokemon.name)));
+      if (pokemon.id === matchedId) copy.appendChild(createElement('span', 'search-match-pill', 'Your search'));
       if (family.branching && pokemon.parentId && family.byId.has(pokemon.parentId)) {
         copy.appendChild(createElement('div','parent-note','↳ from ' + displayName(family.byId.get(pokemon.parentId).name)));
       }
       card.appendChild(copy);
       return card;
     }
-    function renderFamily(family, isInitial = false) {
+    function renderFamily(family, isInitial = false, matchedId = null) {
       current = family;
-      document.getElementById('familyTitle').replaceChildren(document.createTextNode(displayName(family.root.name) + ' '),createElement('span','faded','family'));
+      document.getElementById('familyTitle').replaceChildren(document.createTextNode(displayName(family.root.name) + ' '),createElement('span','faded',family.count === 1 ? 'entry' : 'family'));
       document.getElementById('countFact').innerHTML = '<strong>' + family.count + '</strong> Pokémon';
       document.getElementById('stagesFact').innerHTML = '<strong>' + family.stages.length + '</strong> stages';
-      document.getElementById('branchFact').textContent = family.branching ? '↗ Branching paths' : '→ Straight-line path';
+      document.getElementById('branchFact').textContent = family.count === 1 ? 'Single-stage Pokémon' : family.branching ? '↗ Branching paths' : '→ Straight-line path';
       document.getElementById('rollCount').textContent = '/ ' + String(rollCounter).padStart(2,'0');
       const ids = family.members.map(n => n.id).sort((a,b) => a-b);
       document.getElementById('dexRange').textContent = 'DEX ' + dexNumber(ids[0]) + ' – ' + dexNumber(ids[ids.length - 1]);
-      document.getElementById('familyNote').textContent = family.branching ? 'Each branch is included, with its parent labeled.' : 'Every stage, from start to finish.';
+      document.getElementById('familyNote').textContent = family.count === 1 ? 'This Pokémon does not evolve.' : family.branching ? 'Each branch is included, with its parent labeled.' : 'Every stage, from start to finish.';
       stageTrack.className = 'track ' + (family.branching ? 'branching' : 'linear');
       stageTrack.style.setProperty('--stages',family.stages.length);
       const fragment = document.createDocumentFragment();
@@ -415,7 +587,7 @@
         stageHead.appendChild(createElement('span','stage-count',members.length + (members.length === 1 ? ' Pokémon' : ' Pokémon')));
         block.appendChild(stageHead);
         const cards = createElement('div', 'cards' + (members.length === 1 ? ' single-card' : ''));
-        members.forEach((node, i) => cards.appendChild(pokemonCard(node, stageIndex, i, family)));
+        members.forEach((node, i) => cards.appendChild(pokemonCard(node, stageIndex, i, family, matchedId)));
         block.appendChild(cards);
         fragment.appendChild(block);
       });
@@ -454,9 +626,12 @@
 
     function statusMessage(text) { document.getElementById('catalogStatus').textContent = text; }
     function useSpeciesRows(rows) {
-      const families = fromRows(rows);
+      const allFamilies = fromRows(rows, true);
+      const families = allFamilies.filter(family => family.count > 1);
       if (families.length < 150) throw new Error('Pokédex source looks incomplete');
       catalog = families;
+      fullPokedexReady = true;
+      buildSearchIndex(allFamilies);
       statusMessage(families.length + ' evolution families unlocked');
     }
     try {
