@@ -473,39 +473,13 @@
       .legendary-search-card .search-input {font-size:12px;}
     }
 
-    /* Dedicated Mythical archive: same interactions, a different visual identity. */
-    .archive-jumps {display:flex;flex-wrap:wrap;gap:11px 20px;margin-top:17px;}
-    .archive-jumps .legendary-jump {margin-top:0;}
-    .mythical-jump {color:#6b55ae;}
-    .mythical-jump:hover {color:#4f398e;}
-    .mythical-section .mythical-intro {background:#eae8f8;border-color:#cac6e9;}
-    .mythical-section .mythical-intro::before {border-color:rgba(99,85,171,.095);}
-    .mythical-section .legendary-eyebrow {color:#6253a5;}
-    .mythical-section .legendary-intro h2 span {color:#6658ab;}
-    .mythical-section .legendary-description {color:#5b5878;}
-    .mythical-section .legendary-catalog-count {background:rgba(255,255,255,.67);color:#635998;}
-    .mythical-section .legendary-catalog-count::before {content:"✧";color:#7160be;}
-    .mythical-section .legendary-search-card {background:rgba(255,255,255,.72);border-color:rgba(96,80,150,.20);}
-    .mythical-section .legendary-search-card .search-label {color:#5b5388;}
-    .mythical-section .legendary-search-card .search-form {border-color:#8172b2;box-shadow:4px 4px 0 rgba(85,65,136,.12);}
-    .mythical-section .legendary-search-card .search-go {background:#6658a5;}
-    .mythical-section .legendary-search-card .search-go:hover {background:#53448e;}
-    .mythical-section .legendary-search-card .search-hint {color:#696484;}
-    .mythical-section .legendary-results .kicker-icon {background:#eae5ff;color:#7866bc;}
-    .mythical-section .frame-top .tiny-square {border-color:#a396db;}
-    html[data-theme="dark"] .mythical-jump {color:#c0b1ff;}
-    html[data-theme="dark"] .mythical-section .mythical-intro {background:#2b2c46;border-color:#625c83;}
-    html[data-theme="dark"] .mythical-section .legendary-intro h2 {color:#f2efff;}
-    html[data-theme="dark"] .mythical-section .legendary-intro h2 span {color:#bcb0ff;}
-    html[data-theme="dark"] .mythical-section .legendary-eyebrow {color:#d0c5ff;}
-    html[data-theme="dark"] .mythical-section .legendary-description {color:#d2cde9;}
-    html[data-theme="dark"] .mythical-section .legendary-catalog-count {background:#393b5e;color:#ded5ff;}
-    html[data-theme="dark"] .mythical-section .legendary-search-card {background:#363550;border-color:#706995;}
-    html[data-theme="dark"] .mythical-section .legendary-search-card .search-label {color:#e0d9ff;}
-    html[data-theme="dark"] .mythical-section .legendary-search-card .search-form {border-color:#afa5ed;box-shadow:4px 4px 0 #25263a;}
-    html[data-theme="dark"] .mythical-section .legendary-search-card .search-go {background:#6d62ae;color:#fff;}
-    html[data-theme="dark"] .mythical-section .legendary-search-card .search-go:hover {background:#7c70c2;}
-    html[data-theme="dark"] .mythical-section .legendary-search-card .search-hint {color:#d2cbed;}
+    /* Both categories live in the Legendary archive; preserve Pokédex labels. */
+    .rare-category {display:inline-flex;align-items:center;gap:5px;margin-top:9px;padding:5px 8px;
+      border:1px solid #dcc79a;border-radius:999px;background:#fff4da;color:#745424;
+      font-size:10px;font-weight:950;line-height:1.1;letter-spacing:.035em;text-transform:uppercase;}
+    .rare-category[data-category="mythical"] {background:#ede6ff;border-color:#cbbaf3;color:#5c4697;}
+    html[data-theme="dark"] .rare-category {background:#594627;border-color:#887043;color:#ffe3a2;}
+    html[data-theme="dark"] .rare-category[data-category="mythical"] {background:#3d355c;border-color:#66569b;color:#ded0ff;}
   </style>
 </head>
 <body>
@@ -535,10 +509,7 @@
             <div class="search-suggestions" id="searchSuggestions" role="listbox" aria-label="Matching Pokémon" hidden></div>
           </div>
           <p class="search-hint" id="searchHint">Type a name to see suggestions. Use ↑ ↓ and Enter to choose.</p>
-          <div class="archive-jumps">
-            <a class="legendary-jump" href="#legendary">✦ Legendary archive ↗</a>
-            <a class="legendary-jump mythical-jump" href="#mythical">✧ Mythical archive ↗</a>
-          </div>
+          <a class="legendary-jump" href="#legendary">✦ Explore Legendary &amp; Mythical Pokémon ↗</a>
         </div>
       </div>
       <div class="action-card">
@@ -575,100 +546,52 @@
       <p id="liveMessage" class="sr-only" aria-live="polite" aria-atomic="true"></p>
     </section>
 
-    <!-- Dedicated Legendary archive. Single-stage Pokémon live here as well as rare evolving lines. -->
-    <section class="legendary-section container" id="legendary" aria-label="Legendary Pokémon explorer">
+    <!-- One archive for Legendary and Mythical Pokémon, with their categories shown individually. -->
+    <section class="legendary-section container" id="legendary" aria-label="Legendary and Mythical Pokémon explorer">
       <div class="legendary-intro">
         <div class="legendary-intro-copy">
           <div class="legendary-eyebrow"><span class="legendary-glyph" aria-hidden="true">✦</span> A rare kind of discovery</div>
           <h2>Enter the<br><span>Legendary</span><br>archive.</h2>
-          <p class="legendary-description">Meet the Pokémon of legends, one discovery at a time. Most stand alone; rare evolving Legendary lines appear together, with their alternate forms and Mega Evolutions.</p>
-          <div class="legendary-catalog-count" id="legendaryCatalogCount">Legendary selection ready</div>
+          <p class="legendary-description">Discover Legendary and Mythical Pokémon together in one archive, including rare evolution lines, alternate forms, and Mega Evolutions.</p>
+          <div class="legendary-catalog-count" id="legendaryCatalogCount">Legendary and Mythical selection ready</div>
         </div>
         <div class="legendary-search-area" id="legendarySearchArea">
           <div class="legendary-search-card">
-            <label class="search-label" for="legendarySearch">Find a Legendary Pokémon</label>
+            <label class="search-label" for="legendarySearch">Find a Legendary or Mythical Pokémon</label>
             <div class="search-wrap">
               <form class="search-form" id="legendarySearchForm" role="search" autocomplete="off">
                 <span class="search-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"></circle><path d="m16 16 5 5"></path></svg></span>
-                <input class="search-input" id="legendarySearch" name="legendary" type="search" placeholder="Try Mewtwo, Lugia, or Cosmog…" spellcheck="false" autocapitalize="off" autocomplete="off" role="combobox" aria-autocomplete="list" aria-controls="legendarySuggestions" aria-expanded="false" aria-haspopup="listbox" aria-describedby="legendarySearchHint">
+                <input class="search-input" id="legendarySearch" name="legendary" type="search" placeholder="Try Mewtwo, Mew, or Arceus…" spellcheck="false" autocapitalize="off" autocomplete="off" role="combobox" aria-autocomplete="list" aria-controls="legendarySuggestions" aria-expanded="false" aria-haspopup="listbox" aria-describedby="legendarySearchHint">
                 <button class="search-go" type="submit">Find ↗</button>
               </form>
-              <div class="search-suggestions" id="legendarySuggestions" role="listbox" aria-label="Matching Legendary Pokémon" hidden></div>
+              <div class="search-suggestions" id="legendarySuggestions" role="listbox" aria-label="Matching Legendary and Mythical Pokémon" hidden></div>
             </div>
-            <p class="search-hint" id="legendarySearchHint">Autocomplete includes Legendary forms and Mega Evolutions.</p>
+            <p class="search-hint" id="legendarySearchHint">Search both categories, including alternate forms and Mega Evolutions.</p>
           </div>
         </div>
       </div>
       <div class="legendary-results" id="legendaryResults">
         <div class="results-title-row">
           <div>
-            <div class="section-kicker"><span class="kicker-icon" aria-hidden="true">✦</span> Legendary discovery <span id="legendaryRollCount">/ 01</span></div>
+            <div class="section-kicker"><span class="kicker-icon" aria-hidden="true">✦</span> Legendary &amp; Mythical discovery <span id="legendaryRollCount">/ 01</span></div>
             <h2 id="legendaryTitle">Mewtwo <span class="faded">Legendary Pokémon</span></h2>
           </div>
           <div class="facts"><span class="fact" id="legendaryCountFact"><strong>1</strong> Legendary</span><span class="fact" id="legendaryStagesFact">Does not evolve</span><span class="fact" id="legendaryFormsFact">2 extra forms</span></div>
         </div>
-        <nav class="family-navigation" aria-label="Legendary Pokémon navigation">
+        <nav class="family-navigation" aria-label="Legendary and Mythical Pokémon navigation">
           <span class="history-label" id="legendaryHistoryText">Viewed 1 of 1</span>
           <div class="family-nav-buttons">
             <button type="button" class="family-nav-button" id="legendaryPreviousButton" disabled>← Previous</button>
-            <button type="button" class="family-nav-button primary" id="legendaryNextButton">Next legendary →</button>
+            <button type="button" class="family-nav-button primary" id="legendaryNextButton">Next discovery →</button>
           </div>
         </nav>
         <div class="frame">
-          <div class="frame-top"><span class="tiny-square" aria-hidden="true"></span> LEGENDARY RECORD <span class="stretch"></span><span class="frame-dex" id="legendaryDexRange">DEX #0150</span></div>
-          <div class="track linear legendary-track single-legend" id="legendaryTrack" aria-label="Legendary Pokémon and any evolutions"></div>
+          <div class="frame-top"><span class="tiny-square" aria-hidden="true"></span> ARCHIVE RECORD <span class="stretch"></span><span class="frame-dex" id="legendaryDexRange">DEX #0150</span></div>
+          <div class="track linear legendary-track single-legend" id="legendaryTrack" aria-label="Legendary and Mythical Pokémon and any evolutions"></div>
           <div class="frame-bottom"><div class="family-note" id="legendaryNote">A Legendary Pokémon with no evolution.</div><span class="frame-hint">Tap artwork to zoom · ♫ to hear a name</span></div>
         </div>
-        <p class="legendary-note">Legendary and Mythical Pokémon are distinct categories. Discover Mythical Pokémon in the <a href="#mythical">Mythical archive</a> below.</p>
+        <p class="legendary-note">This archive includes both Legendary and Mythical Pokémon. Each discovery is labeled with its Pokédex category.</p>
         <p id="legendaryLiveMessage" class="sr-only" aria-live="polite" aria-atomic="true"></p>
-      </div>
-    </section>
-    <!-- Mythical species are a distinct category from Legendary Pokémon, and have a dedicated archive. -->
-    <section class="legendary-section mythical-section container" id="mythical" aria-label="Mythical Pokémon explorer">
-      <div class="legendary-intro mythical-intro">
-        <div class="legendary-intro-copy">
-          <div class="legendary-eyebrow"><span class="legendary-glyph" aria-hidden="true">✧</span> An extraordinary discovery</div>
-          <h2>Explore the<br><span>Mythical</span><br>archive.</h2>
-          <p class="legendary-description">From Mew to Pecharunt, uncover Mythical Pokémon one at a time. Explore rare evolution lines, special forms, and Mega Evolutions along the way.</p>
-          <div class="legendary-catalog-count" id="mythicalCatalogCount">Mythical selection ready</div>
-        </div>
-        <div class="legendary-search-area" id="mythicalSearchArea">
-          <div class="legendary-search-card">
-            <label class="search-label" for="mythicalSearch">Find a Mythical Pokémon</label>
-            <div class="search-wrap">
-              <form class="search-form" id="mythicalSearchForm" role="search" autocomplete="off">
-                <span class="search-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"></circle><path d="m16 16 5 5"></path></svg></span>
-                <input class="search-input" id="mythicalSearch" name="mythical" type="search" placeholder="Try Mew, Shaymin, or Melmetal…" spellcheck="false" autocapitalize="off" autocomplete="off" role="combobox" aria-autocomplete="list" aria-controls="mythicalSuggestions" aria-expanded="false" aria-haspopup="listbox" aria-describedby="mythicalSearchHint">
-                <button class="search-go" type="submit">Find ↗</button>
-              </form>
-              <div class="search-suggestions" id="mythicalSuggestions" role="listbox" aria-label="Matching Mythical Pokémon" hidden></div>
-            </div>
-            <p class="search-hint" id="mythicalSearchHint">Search Mythical Pokémon, alternate forms, and Mega Evolutions.</p>
-          </div>
-        </div>
-      </div>
-      <div class="legendary-results mythical-results" id="mythicalResults">
-        <div class="results-title-row">
-          <div>
-            <div class="section-kicker"><span class="kicker-icon" aria-hidden="true">✧</span> Mythical discovery <span id="mythicalRollCount">/ 01</span></div>
-            <h2 id="mythicalTitle">Mew <span class="faded">Mythical Pokémon</span></h2>
-          </div>
-          <div class="facts"><span class="fact" id="mythicalCountFact"><strong>1</strong> Mythical</span><span class="fact" id="mythicalStagesFact">Does not evolve</span><span class="fact" id="mythicalFormsFact">Base forms</span></div>
-        </div>
-        <nav class="family-navigation" aria-label="Mythical Pokémon navigation">
-          <span class="history-label" id="mythicalHistoryText">Viewed 1 of 1</span>
-          <div class="family-nav-buttons">
-            <button type="button" class="family-nav-button" id="mythicalPreviousButton" disabled>← Previous</button>
-            <button type="button" class="family-nav-button primary" id="mythicalNextButton">Next mythical →</button>
-          </div>
-        </nav>
-        <div class="frame">
-          <div class="frame-top"><span class="tiny-square" aria-hidden="true"></span> MYTHICAL RECORD <span class="stretch"></span><span class="frame-dex" id="mythicalDexRange">DEX #0151</span></div>
-          <div class="track linear legendary-track single-legend mythical-track" id="mythicalTrack" aria-label="Mythical Pokémon and any evolutions"></div>
-          <div class="frame-bottom"><div class="family-note" id="mythicalNote">A Mythical Pokémon with no evolution.</div><span class="frame-hint">Tap artwork to zoom · ♫ to hear a name</span></div>
-        </div>
-        <p class="legendary-note">Mythical Pokémon have their own archive, separate from <a href="#legendary">Legendary Pokémon</a>. Both can be found using the main search.</p>
-        <p id="mythicalLiveMessage" class="sr-only" aria-live="polite" aria-atomic="true"></p>
       </div>
     </section>
   </main>
@@ -772,7 +695,7 @@
 
 
     // Offline starter Legendary selection. The complete collection uses the official
-    // pokemon_species.csv is_legendary flag; Mythical Pokémon have their own archive.
+    // pokemon_species.csv is_legendary flag; Mythicals join the same discovery archive.
     const LEGENDARY_LINES = [
       [[150,'mewtwo']], [[144,'articuno']], [[145,'zapdos']], [[146,'moltres']],
       [[243,'raikou']], [[244,'entei']], [[245,'suicune']],
@@ -792,7 +715,7 @@
     ];
 
     // All currently classified Mythical species are available even if the live CSV is offline.
-    // The PokéAPI is_mythical flag updates this archive automatically when new species arrive.
+    // The PokéAPI is_mythical flag keeps the shared archive up to date.
     const MYTHICAL_LINES = [
       [[151,'mew']], [[251,'celebi']], [[385,'jirachi']], [[386,'deoxys']],
       [[489,'phione']], [[490,'manaphy']], [[491,'darkrai']], [[492,'shaymin']],
@@ -917,13 +840,13 @@
         entries.map(([id,name,parentId]) => ({id,name,parentId:parentId || null})));
     }
     let catalog = STARTER_LINES.map(fallbackFamily).filter(Boolean);
-    let legendaryCatalog = LEGENDARY_LINES.map(fallbackLegendary).filter(Boolean);
-    let legendaryIds = new Set(legendaryCatalog.flatMap(f=>f.members.map(p=>p.id)));
-    let legendaryFamilyBySpecies = new Map(legendaryCatalog.flatMap(f=>f.members.map(p=>[p.id,f])));
     let mythicalCatalog = MYTHICAL_LINES.map(fallbackMythical).filter(Boolean);
-    let mythicalIds = new Set(mythicalCatalog.flatMap(f=>f.members.map(p=>p.id)));
-    let mythicalFamilyBySpecies = new Map(mythicalCatalog.flatMap(f=>f.members.map(p=>[p.id,f])));
-    let searchFamilies = [...catalog,...legendaryCatalog,...mythicalCatalog];
+    let legendaryCatalog = [...LEGENDARY_LINES.map(fallbackLegendary).filter(Boolean), ...mythicalCatalog];
+    let legendaryIds = new Set(LEGENDARY_LINES.flatMap(line => line.map(item => item[0])));
+    let mythicalIds = new Set(mythicalCatalog.flatMap(f => f.members.map(p => p.id)));
+    let rareIds = new Set([...legendaryIds, ...mythicalIds]);
+    let legendaryFamilyBySpecies = new Map(legendaryCatalog.flatMap(f => f.members.map(p => [p.id,f])));
+    let searchFamilies = [...catalog, ...legendaryCatalog];
     let current = catalog[0];
     let fullPokedexReady = false;
     let formsReady = false;
@@ -957,22 +880,6 @@
     let legendarySearchEntries = [];
     let legendaryMatches = [];
     let legendaryActiveIndex = -1;
-    const mythicalTrack = document.getElementById('mythicalTrack');
-    const mythicalResults = document.getElementById('mythicalResults');
-    const mythicalSearchInput = document.getElementById('mythicalSearch');
-    const mythicalSuggestions = document.getElementById('mythicalSuggestions');
-    const mythicalPreviousButton = document.getElementById('mythicalPreviousButton');
-    const mythicalNextButton = document.getElementById('mythicalNextButton');
-    const mythicalHistoryText = document.getElementById('mythicalHistoryText');
-    const mythicalLiveMessage = document.getElementById('mythicalLiveMessage');
-    let currentMythical = mythicalCatalog[0];
-    const mythicalHistory = [{family:currentMythical,matchedId:null,matchedVariantKey:null}];
-    let mythicalHistoryIndex = 0;
-    const mythicalRecentlySeen = [];
-    let mythicalSearchEntries = [];
-    let mythicalMatches = [];
-    let mythicalActiveIndex = -1;
-
     // Fallback types and familiar forms are available before CSV requests complete.
     const fallbackTypes = {
       1:['grass','poison'],2:['grass','poison'],3:['grass','poison'],4:['fire'],5:['fire'],6:['fire','flying'],
@@ -1167,8 +1074,6 @@
       renderFamily(history[historyIndex].family,true,history[historyIndex].matchedId,history[historyIndex].matchedVariantKey);
       renderLegendary(legendaryHistory[legendaryHistoryIndex].family,true,
         legendaryHistory[legendaryHistoryIndex].matchedId,legendaryHistory[legendaryHistoryIndex].matchedVariantKey);
-      renderMythical(mythicalHistory[mythicalHistoryIndex].family,true,
-        mythicalHistory[mythicalHistoryIndex].matchedId,mythicalHistory[mythicalHistoryIndex].matchedVariantKey);
     }
 
     function speciesTypes(speciesId) { return pokemonTypes.get(speciesId) || []; }
@@ -1299,7 +1204,7 @@
       }
       return section;
     }
-    function pokemonCard(pokemon, stageIndex, cardIndex, family, matchedId, matchedVariantKey) {
+    function pokemonCard(pokemon, stageIndex, cardIndex, family, matchedId, matchedVariantKey, showRareCategory=false) {
       const card = createElement('article','pokemon-card');
       if (pokemon.id === matchedId && !matchedVariantKey) card.classList.add('is-search-match');
       const colorIndex=(stageIndex*2+cardIndex)%TILE_COLORS.length;
@@ -1311,6 +1216,12 @@
       const copy = createElement('div','pokemon-copy');
       copy.appendChild(createElement('div','dex',dexNumber(pokemon.id)));
       copy.appendChild(createElement('h3','',name));
+      if (showRareCategory) {
+        const category = mythicalIds.has(pokemon.id) ? 'Mythical' : 'Legendary';
+        const badge = createElement('span','rare-category',category === 'Mythical' ? '\u2727 Mythical' : '\u2726 Legendary');
+        badge.dataset.category = category.toLowerCase();
+        copy.appendChild(badge);
+      }
       copy.appendChild(makeTypeBadges(speciesTypes(pokemon.id)));
       if (pokemon.id === matchedId && !matchedVariantKey) copy.appendChild(createElement('span','search-match-pill','Your search'));
       if (family.branching && pokemon.parentId && family.byId.has(pokemon.parentId)) {
@@ -1434,23 +1345,24 @@
     });
 
 
-    // Legendary history and shuffle are entirely separate from the evolution explorer.
+    // One browsing history and random pool for both Legendary and Mythical Pokémon.
     function updateLegendaryNavigation() {
       legendaryPreviousButton.disabled=legendaryHistoryIndex===0;
-      legendaryPreviousButton.title=legendaryHistoryIndex===0?'No previous Legendary yet':'View your previous Legendary';
-      legendaryNextButton.textContent=legendaryHistoryIndex<legendaryHistory.length-1?'Forward →':'Next legendary →';
-      legendaryNextButton.title=legendaryHistoryIndex<legendaryHistory.length-1?'Return to the next Legendary in your history':'Pick another Legendary at random';
+      legendaryPreviousButton.title=legendaryHistoryIndex===0?'No previous discovery yet':'View your previous discovery';
+      legendaryNextButton.textContent=legendaryHistoryIndex<legendaryHistory.length-1?'Forward \u2192':'Next discovery \u2192';
+      legendaryNextButton.title=legendaryHistoryIndex<legendaryHistory.length-1?'Return to your next discovery':'Pick another Legendary or Mythical Pokémon at random';
       legendaryHistoryText.textContent='Viewed '+(legendaryHistoryIndex+1)+' of '+legendaryHistory.length;
     }
     function renderLegendary(family,quiet=false,matchedId=null,matchedVariantKey=null) {
       currentLegendary=family;
       const solo=family.count===1;
+      const category=mythicalIds.has(family.root.id)?'Mythical':'Legendary';
       document.getElementById('legendaryTitle').replaceChildren(
         document.createTextNode(displayName(family.root.name)+' '),
-        createElement('span','faded',solo?'Legendary Pokémon':'legendary line'));
+        createElement('span','faded',solo?category+' Pok\u00e9mon':category.toLowerCase()+' line'));
       document.getElementById('legendaryCountFact').replaceChildren(
         createElement('strong','',String(family.count)),
-        document.createTextNode(family.count===1?' Legendary':' Legendary Pokémon'));
+        document.createTextNode(family.count===1?' '+category:' '+category+' Pok\u00e9mon'));
       document.getElementById('legendaryStagesFact').textContent=solo?'Does not evolve':
         family.stages.length+' evolution stages';
       const formCount=family.members.reduce((n,p)=>n+variantsFor(p.id).length,0);
@@ -1459,10 +1371,10 @@
       document.getElementById('legendaryRollCount').textContent='/ '+String(legendaryHistoryIndex+1).padStart(2,'0');
       const ids=family.members.map(p=>p.id).sort((a,b)=>a-b);
       document.getElementById('legendaryDexRange').textContent='DEX '+dexNumber(ids[0])+
-        (ids.length>1?' – '+dexNumber(ids[ids.length-1]):'');
+        (ids.length>1?' \u2013 '+dexNumber(ids[ids.length-1]):'');
       document.getElementById('legendaryNote').textContent=solo?
-        'This Legendary Pokémon does not evolve. Its forms and Megas are shown below when available.':
-        'A rare Legendary evolution line. All its stages and branching paths appear here.';
+        'This '+category+' Pok\u00e9mon does not evolve. Its forms and Megas appear below when available.':
+        'A rare '+category+' evolution line. All its stages and branching paths appear here.';
       legendaryTrack.className='track legendary-track '+(solo?'linear single-legend':family.branching?'branching':'linear');
       legendaryTrack.style.setProperty('--stages',family.stages.length);
       const fragment=document.createDocumentFragment();
@@ -1470,11 +1382,11 @@
         const block=createElement('section','stage-block');
         const head=createElement('div','stage-heading');
         head.appendChild(createElement('span','stage-name',
-          String(stageIndex+1).padStart(2,'0')+' / '+(solo?'LEGENDARY POKÉMON':stageIndex===0?'BASE FORM':'EVOLUTION '+String(stageIndex).padStart(2,'0'))));
-        head.appendChild(createElement('span','stage-count',members.length+' Pokémon'));
+          String(stageIndex+1).padStart(2,'0')+' / '+(solo?category.toUpperCase()+' POK\u00c9MON':stageIndex===0?'BASE FORM':'EVOLUTION '+String(stageIndex).padStart(2,'0'))));
+        head.appendChild(createElement('span','stage-count',members.length+' Pok\u00e9mon'));
         block.appendChild(head);
         const cards=createElement('div','cards'+(members.length===1?' single-card':''));
-        members.forEach((pokemon,i)=>cards.appendChild(pokemonCard(pokemon,stageIndex,i,family,matchedId,matchedVariantKey)));
+        members.forEach((pokemon,i)=>cards.appendChild(pokemonCard(pokemon,stageIndex,i,family,matchedId,matchedVariantKey,true)));
         block.appendChild(cards);
         fragment.appendChild(block);
       });
@@ -1484,8 +1396,8 @@
         legendaryTrack.classList.remove('reveal');
         void legendaryTrack.offsetWidth;
         legendaryTrack.classList.add('reveal');
-        legendaryLiveMessage.textContent='Showing Legendary '+displayName(family.root.name)+
-          ', '+family.count+' Pokémon. '+legendaryHistoryText.textContent+'.';
+        legendaryLiveMessage.textContent='Showing '+category+' '+displayName(family.root.name)+
+          ', '+family.count+' Pok\u00e9mon. '+legendaryHistoryText.textContent+'.';
       }
     }
     function scrollToLegendary() {
@@ -1527,106 +1439,6 @@
       } else rollLegendary();
     });
 
-
-    // Mythical history and discovery are independent of the Legendary archive.
-    function updateMythicalNavigation() {
-      mythicalPreviousButton.disabled=mythicalHistoryIndex===0;
-      mythicalPreviousButton.title=mythicalHistoryIndex===0?'No previous Mythical yet':'View your previous Mythical';
-      mythicalNextButton.textContent=mythicalHistoryIndex<mythicalHistory.length-1?'Forward →':'Next mythical →';
-      mythicalNextButton.title=mythicalHistoryIndex<mythicalHistory.length-1?'Return to the next Mythical in your history':'Pick another Mythical at random';
-      mythicalHistoryText.textContent='Viewed '+(mythicalHistoryIndex+1)+' of '+mythicalHistory.length;
-    }
-
-    function renderMythical(family,quiet=false,matchedId=null,matchedVariantKey=null) {
-      currentMythical=family;
-      const solo=family.count===1;
-      document.getElementById('mythicalTitle').replaceChildren(
-        document.createTextNode(displayName(family.root.name)+' '),
-        createElement('span','faded',solo?'Mythical Pokémon':'mythical line'));
-      document.getElementById('mythicalCountFact').replaceChildren(
-        createElement('strong','',String(family.count)),
-        document.createTextNode(family.count===1?' Mythical':' Mythical Pokémon'));
-      document.getElementById('mythicalStagesFact').textContent=solo?'Does not evolve':
-        family.stages.length+' evolution stages';
-      const formCount=family.members.reduce((n,p)=>n+variantsFor(p.id).length,0);
-      document.getElementById('mythicalFormsFact').textContent=formCount?
-        formCount+' extra '+(formCount===1?'form':'forms'):'Base forms';
-      document.getElementById('mythicalRollCount').textContent='/ '+String(mythicalHistoryIndex+1).padStart(2,'0');
-      const ids=family.members.map(p=>p.id).sort((a,b)=>a-b);
-      document.getElementById('mythicalDexRange').textContent='DEX '+dexNumber(ids[0])+
-        (ids.length>1?' – '+dexNumber(ids[ids.length-1]):'');
-      document.getElementById('mythicalNote').textContent=solo?
-        'This Mythical Pokémon does not evolve. Alternate forms and Megas appear below when available.':
-        'A rare Mythical evolution line. All stages and branching paths appear here.';
-      mythicalTrack.className='track legendary-track mythical-track '+(solo?'linear single-legend':family.branching?'branching':'linear');
-      mythicalTrack.style.setProperty('--stages',family.stages.length);
-      const fragment=document.createDocumentFragment();
-      family.stages.forEach((members,stageIndex)=>{
-        const block=createElement('section','stage-block');
-        const head=createElement('div','stage-heading');
-        head.appendChild(createElement('span','stage-name',
-          String(stageIndex+1).padStart(2,'0')+' / '+(solo?'MYTHICAL POKÉMON':stageIndex===0?'BASE FORM':'EVOLUTION '+String(stageIndex).padStart(2,'0'))));
-        head.appendChild(createElement('span','stage-count',members.length+' Pokémon'));
-        block.appendChild(head);
-        const cards=createElement('div','cards'+(members.length===1?' single-card':''));
-        members.forEach((pokemon,i)=>cards.appendChild(pokemonCard(pokemon,stageIndex,i,family,matchedId,matchedVariantKey)));
-        block.appendChild(cards);
-        fragment.appendChild(block);
-      });
-      mythicalTrack.replaceChildren(fragment);
-      updateMythicalNavigation();
-      if (!quiet) {
-        mythicalTrack.classList.remove('reveal');
-        void mythicalTrack.offsetWidth;
-        mythicalTrack.classList.add('reveal');
-        mythicalLiveMessage.textContent='Showing Mythical '+displayName(family.root.name)+
-          ', '+family.count+' Pokémon. '+mythicalHistoryText.textContent+'.';
-      }
-    }
-
-    function scrollToMythical() {
-      mythicalResults.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'start'});
-    }
-
-    function showMythical(family,matchedId=null,matchedVariantKey=null) {
-      const here=mythicalHistory[mythicalHistoryIndex];
-      if (here.family.root.id!==family.root.id||here.matchedId!==matchedId||here.matchedVariantKey!==matchedVariantKey) {
-        mythicalHistory.splice(mythicalHistoryIndex+1);
-        mythicalHistory.push({family,matchedId,matchedVariantKey});
-        mythicalHistoryIndex=mythicalHistory.length-1;
-      }
-      renderMythical(family,false,matchedId,matchedVariantKey);
-      scrollToMythical();
-    }
-
-    mythicalPreviousButton.addEventListener('click',()=>{
-      if (!mythicalHistoryIndex) return;
-      mythicalHistoryIndex--;
-      const entry=mythicalHistory[mythicalHistoryIndex];
-      renderMythical(entry.family,false,entry.matchedId,entry.matchedVariantKey);
-      scrollToMythical();
-    });
-
-    function rollMythical() {
-      const recent=new Set(mythicalRecentlySeen);
-      const candidates=mythicalCatalog.filter(f=>f.root.id!==currentMythical.root.id&&!recent.has(f.root.id));
-      const pool=candidates.length?candidates:mythicalCatalog.filter(f=>f.root.id!==currentMythical.root.id);
-      if (!pool.length) return;
-      const next=pool[secureRandom(pool.length)];
-      mythicalRecentlySeen.push(next.root.id);
-      if (mythicalRecentlySeen.length>10) mythicalRecentlySeen.shift();
-      showMythical(next);
-    }
-
-    mythicalNextButton.addEventListener('click',()=>{
-      if (mythicalHistoryIndex<mythicalHistory.length-1) {
-        mythicalHistoryIndex++;
-        const entry=mythicalHistory[mythicalHistoryIndex];
-        renderMythical(entry.family,false,entry.matchedId,entry.matchedVariantKey);
-        scrollToMythical();
-      } else rollMythical();
-    });
-
     function buildSearchIndex(families) {
       searchEntries=[];
       families.forEach(family=>family.members.forEach(pokemon=>{
@@ -1636,11 +1448,9 @@
           searchEntries.push({id:pokemon.id,name:form.name,keys:form.searchKeys,family,formKey:form.key,kind:form.kind});
         });
       }));
-      legendarySearchEntries=searchEntries.filter(entry=>legendaryIds.has(entry.id));
-      mythicalSearchEntries=searchEntries.filter(entry=>mythicalIds.has(entry.id));
+      legendarySearchEntries=searchEntries.filter(entry=>rareIds.has(entry.id));
       if (searchInput.value.trim()&&document.activeElement===searchInput) showSuggestions();
       if (legendarySearchInput.value.trim()&&document.activeElement===legendarySearchInput) showLegendarySuggestions();
-      if (mythicalSearchInput.value.trim()&&document.activeElement===mythicalSearchInput) showMythicalSuggestions();
     }
     function matchesFor(query, entries=searchEntries) {
       const text=query.trim();
@@ -1709,9 +1519,7 @@
       searchInput.value=entry.name;
       hideSuggestions();
       searchInput.blur();
-      if (mythicalIds.has(entry.id)) {
-        showMythical(mythicalFamilyBySpecies.get(entry.id)||entry.family,entry.id,entry.formKey);
-      } else if (legendaryIds.has(entry.id)) {
+      if (rareIds.has(entry.id)) {
         showLegendary(legendaryFamilyBySpecies.get(entry.id)||entry.family,entry.id,entry.formKey);
       } else showFamily(entry.family,entry.id,entry.formKey);
     }
@@ -1740,7 +1548,7 @@
       if (!document.getElementById('searchArea').contains(event.target)) hideSuggestions();
     });
 
-    // Search remains global above; this additional autocomplete is Legendary-only.
+    // The archive autocomplete includes both Legendary and Mythical species.
     function hideLegendarySuggestions() {
       legendarySuggestions.hidden=true;
       legendarySuggestions.replaceChildren();
@@ -1765,8 +1573,8 @@
       legendarySuggestions.replaceChildren();
       if (!legendaryMatches.length) {
         legendarySuggestions.appendChild(createElement('div','search-empty',fullPokedexReady?
-          'No matching Legendary Pokémon. Mythical Pokémon are not in this archive.':
-          'No match in the offline Legendary selection. The full archive loads online.'));
+          'No matching Legendary or Mythical Pok\u00e9mon. Try a different name.':
+          'No match in the offline rare Pok\u00e9mon selection. The full archive loads online.'));
       } else legendaryMatches.forEach((entry,i)=>{
         const option=createElement('button','search-option');
         option.type='button';
@@ -1774,7 +1582,8 @@
         option.setAttribute('aria-selected','false');
         option.id='legendary-option-'+i;
         option.appendChild(createElement('span','search-option-name',entry.name));
-        option.appendChild(createElement('span','search-option-dex',dexNumber(entry.id)+(entry.kind?' · '+entry.kind:'')));
+        option.appendChild(createElement('span','search-option-dex',dexNumber(entry.id)+(entry.kind?' \u00b7 '+entry.kind:'')+
+          ' \u00b7 '+(mythicalIds.has(entry.id)?'Mythical':'Legendary')));
         option.addEventListener('pointerdown',event=>event.preventDefault());
         option.addEventListener('click',()=>selectLegendary(entry));
         legendarySuggestions.appendChild(option);
@@ -1816,119 +1625,33 @@
       if (!document.getElementById('legendarySearchArea').contains(event.target)) hideLegendarySuggestions();
     });
 
-    // Mythical-only autocomplete, with independent focus, selection, and history.
-    function hideMythicalSuggestions() {
-      mythicalSuggestions.hidden=true;
-      mythicalSuggestions.replaceChildren();
-      mythicalSearchInput.setAttribute('aria-expanded','false');
-      mythicalSearchInput.removeAttribute('aria-activedescendant');
-      mythicalActiveIndex=-1;
-      mythicalMatches=[];
-    }
-
-    function highlightMythicalSuggestion(index) {
-      mythicalActiveIndex=index;
-      const options=mythicalSuggestions.querySelectorAll('[role="option"]');
-      options.forEach((option,i)=>option.setAttribute('aria-selected',String(index===i)));
-      if (index>=0&&options[index]) {
-        mythicalSearchInput.setAttribute('aria-activedescendant',options[index].id);
-        options[index].scrollIntoView({block:'nearest'});
-      } else mythicalSearchInput.removeAttribute('aria-activedescendant');
-    }
-
-    function showMythicalSuggestions() {
-      if (!mythicalSearchInput.value.trim()) { hideMythicalSuggestions(); return; }
-      mythicalMatches=matchesFor(mythicalSearchInput.value,mythicalSearchEntries);
-      mythicalActiveIndex=-1;
-      mythicalSuggestions.replaceChildren();
-      if (!mythicalMatches.length) {
-        mythicalSuggestions.appendChild(createElement('div','search-empty',fullPokedexReady?
-          'No matching Mythical Pokémon. Try the main search for other Pokémon.':
-          'No match in the offline Mythical selection. The full archive loads online.'));
-      } else mythicalMatches.forEach((entry,i)=>{
-        const option=createElement('button','search-option');
-        option.type='button';
-        option.setAttribute('role','option');
-        option.setAttribute('aria-selected','false');
-        option.id='mythical-option-'+i;
-        option.appendChild(createElement('span','search-option-name',entry.name));
-        option.appendChild(createElement('span','search-option-dex',dexNumber(entry.id)+(entry.kind?' · '+entry.kind:'')));
-        option.addEventListener('pointerdown',event=>event.preventDefault());
-        option.addEventListener('click',()=>selectMythical(entry));
-        mythicalSuggestions.appendChild(option);
-      });
-      mythicalSuggestions.hidden=false;
-      mythicalSearchInput.setAttribute('aria-expanded','true');
-    }
-
-    function selectMythical(entry) {
-      mythicalSearchInput.value=entry.name;
-      hideMythicalSuggestions();
-      mythicalSearchInput.blur();
-      const family=mythicalFamilyBySpecies.get(entry.id);
-      if (family) showMythical(family,entry.id,entry.formKey);
-    }
-
-    mythicalSearchInput.addEventListener('input',showMythicalSuggestions);
-    mythicalSearchInput.addEventListener('focus',()=>{
-      if (mythicalSearchInput.value.trim()) showMythicalSuggestions();
-    });
-    mythicalSearchInput.addEventListener('keydown',event=>{
-      if (event.key==='Escape') { hideMythicalSuggestions(); return; }
-      if (event.key==='ArrowDown'||event.key==='ArrowUp') {
-        if (mythicalSuggestions.hidden) showMythicalSuggestions();
-        if (!mythicalMatches.length) return;
-        event.preventDefault();
-        const direction=event.key==='ArrowDown'?1:-1;
-        const index=mythicalActiveIndex<0?(direction===1?0:mythicalMatches.length-1):
-          (mythicalActiveIndex+direction+mythicalMatches.length)%mythicalMatches.length;
-        highlightMythicalSuggestion(index);
-      }
-    });
-    document.getElementById('mythicalSearchForm').addEventListener('submit',event=>{
-      event.preventDefault();
-      if (!mythicalSearchInput.value.trim()) { mythicalSearchInput.focus(); return; }
-      const chosen=mythicalActiveIndex>=0&&mythicalMatches[mythicalActiveIndex]?
-        mythicalMatches[mythicalActiveIndex]:matchesFor(mythicalSearchInput.value,mythicalSearchEntries)[0];
-      if (chosen) selectMythical(chosen); else showMythicalSuggestions();
-    });
-    document.addEventListener('pointerdown',event=>{
-      if (!document.getElementById('mythicalSearchArea').contains(event.target)) hideMythicalSuggestions();
-    });
-
     buildSearchIndex(searchFamilies);
     renderFamily(current,true);
     renderLegendary(currentLegendary,true);
-    renderMythical(currentMythical,true);
-    document.getElementById('legendaryCatalogCount').textContent=legendaryIds.size+' Legendary Pokémon ready';
-    document.getElementById('mythicalCatalogCount').textContent=mythicalIds.size+' Mythical Pokémon ready';
+    document.getElementById('legendaryCatalogCount').textContent=
+      legendaryIds.size+' Legendary + '+mythicalIds.size+' Mythical Pok\u00e9mon ready';
 
     function statusMessage(text) { document.getElementById('catalogStatus').textContent=text; }
     function useSpeciesRows(rows) {
       const allFamilies=fromRows(rows,true);
       const families=allFamilies.filter(f=>f.count>1);
-      if (families.length<150) throw new Error('Incomplete Pokédex');
+      if (families.length<150) throw new Error('Incomplete Pok\u00e9dex');
       const legendaryFamilies=legendaryFromRows(rows);
       const mythicalFamilies=mythicalFromRows(rows);
-      if (!legendaryFamilies.length || !mythicalFamilies.length) throw new Error('Rare Pokémon listings unavailable');
-      const legendarySpeciesIds=new Set(legendaryFamilies.flatMap(f=>f.members.map(p=>p.id)));
-      const mythicalSpeciesIds=new Set(mythicalFamilies.flatMap(f=>f.members.map(p=>p.id)));
-      catalog=families.filter(f=>!f.members.some(p=>legendarySpeciesIds.has(p.id)||mythicalSpeciesIds.has(p.id)));
-      legendaryCatalog=legendaryFamilies;
-      legendaryIds=legendarySpeciesIds;
+      if (!legendaryFamilies.length || !mythicalFamilies.length) throw new Error('Rare Pok\u00e9mon listings unavailable');
+      legendaryIds=new Set(legendaryFamilies.flatMap(f=>f.members.map(p=>p.id)));
+      mythicalIds=new Set(mythicalFamilies.flatMap(f=>f.members.map(p=>p.id)));
+      rareIds=new Set([...legendaryIds,...mythicalIds]);
+      catalog=families.filter(f=>!f.members.some(p=>rareIds.has(p.id)));
+      legendaryCatalog=[...legendaryFamilies,...mythicalFamilies];
       legendaryFamilyBySpecies=new Map(legendaryCatalog.flatMap(f=>f.members.map(p=>[p.id,f])));
-      mythicalCatalog=mythicalFamilies;
-      mythicalIds=mythicalSpeciesIds;
-      mythicalFamilyBySpecies=new Map(mythicalCatalog.flatMap(f=>f.members.map(p=>[p.id,f])));
       searchFamilies=allFamilies;
       fullPokedexReady=true;
       buildSearchIndex(allFamilies);
-      document.getElementById('legendaryCatalogCount').textContent=legendaryIds.size+' Legendary Pokémon to discover';
-      document.getElementById('mythicalCatalogCount').textContent=mythicalIds.size+' Mythical Pokémon to discover';
+      document.getElementById('legendaryCatalogCount').textContent=
+        legendaryIds.size+' Legendary + '+mythicalIds.size+' Mythical Pok\u00e9mon to discover';
       renderLegendary(legendaryHistory[legendaryHistoryIndex].family,true,
         legendaryHistory[legendaryHistoryIndex].matchedId,legendaryHistory[legendaryHistoryIndex].matchedVariantKey);
-      renderMythical(mythicalHistory[mythicalHistoryIndex].family,true,
-        mythicalHistory[mythicalHistoryIndex].matchedId,mythicalHistory[mythicalHistoryIndex].matchedVariantKey);
       // Rebuild form display names once the complete species names are known.
       if (lastFormPayload) useFormPayload(lastFormPayload);
       statusMessage(families.length+' evolution families unlocked');
