@@ -481,6 +481,84 @@
     .rare-category[data-category="mythical"] {background:#ede6ff;border-color:#cbbaf3;color:#5c4697;}
     html[data-theme="dark"] .rare-category {background:#594627;border-color:#887043;color:#ffe3a2;}
     html[data-theme="dark"] .rare-category[data-category="mythical"] {background:#3d355c;border-color:#66569b;color:#ded0ff;}
+
+    /* Little-trainer mode: large, well-spaced controls for small hands. */
+    .speak-button {
+      display:flex;align-items:center;justify-content:center;gap:11px;
+      width:100%;min-width:0;min-height:76px;margin-top:15px;padding:15px 12px;
+      border:3px solid #378e80;border-radius:18px;background:#d4f7ed;color:#174b42;
+      font-size:19px;font-weight:1000;line-height:1.2;text-align:center;
+      box-shadow:0 4px 0 rgba(21,91,76,.20);
+      touch-action:manipulation;transition:transform .12s ease,background .12s ease,box-shadow .12s ease;
+    }
+    .speak-icon {font-size:28px;line-height:1;flex:none;}
+    .speak-label {min-width:0;}
+    .speak-button:hover:not(:disabled) {background:#baf0e1;}
+    .speak-button:active:not(:disabled) {transform:translateY(3px);box-shadow:0 1px 0 rgba(21,91,76,.20);}
+    .speak-button.speak-small {min-height:70px;min-width:0;width:100%;margin-top:2px;padding:11px 8px;font-size:17px;}
+    .variant-card {flex-wrap:wrap;gap:10px;padding:12px;}
+    .variant-card > .speak-button {flex:1 0 100%;}
+    html[data-theme="dark"] .speak-button {background:#285e53;border-color:#79ccb5;color:#f6fffc;box-shadow:0 4px 0 rgba(0,0,0,.30);}
+    html[data-theme="dark"] .speak-button:hover:not(:disabled) {background:#347565;}
+    .family-navigation {gap:14px;padding:15px 17px;}
+    .family-nav-buttons {gap:14px;}
+    .family-nav-button {
+      display:inline-flex;align-items:center;justify-content:center;gap:7px;
+      min-height:70px;min-width:150px;padding:15px 19px;
+      border-width:2px;border-radius:17px;font-size:18px;line-height:1.2;
+      font-weight:1000;white-space:normal;text-align:center;touch-action:manipulation;
+    }
+    .family-nav-button.primary {min-height:80px;min-width:228px;box-shadow:0 5px 0 rgba(23,73,56,.20);}
+    .family-nav-button.primary::before {content:"✨";font-size:24px;line-height:1;flex:none;}
+    .family-nav-button.primary:active {transform:translateY(3px);box-shadow:0 2px 0 rgba(23,73,56,.20);}
+    .history-label {font-size:13px;}
+    .search-go {min-width:77px;min-height:56px;padding:12px;font-size:16px;border-radius:13px;touch-action:manipulation;}
+    .search-form {min-height:70px;}
+    .search-option {min-height:60px;padding:15px 13px;touch-action:manipulation;}
+    .search-option-name {font-size:16px;}
+    .show-forms {min-height:58px;padding:13px 12px;font-size:15px;line-height:1.25;touch-action:manipulation;}
+    .roll-button {min-height:78px;font-size:17px;touch-action:manipulation;}
+    .close-art {width:58px;height:58px;font-size:30px;touch-action:manipulation;}
+    .theme-toggle {min-width:54px;min-height:54px;touch-action:manipulation;}
+    .legendary-jump {min-height:54px;align-items:center;font-size:14px;}
+    .speak-button:focus-visible,.family-nav-button:focus-visible {
+      outline:4px solid #7b62ee;outline-offset:4px;
+    }
+    @media (max-width:680px) {
+      /* A big sticky toolbar would cover the cards on a phone. */
+      .family-navigation {position:static;flex-direction:column;align-items:stretch;padding:14px;gap:12px;}
+      .family-nav-buttons {display:grid;grid-template-columns:minmax(0,1fr);gap:13px;width:100%;}
+      .family-nav-button {width:100%;min-width:0;min-height:67px;font-size:18px;padding:14px;}
+      .family-nav-button.primary {grid-row:1;min-width:0;min-height:84px;font-size:20px;}
+      .family-nav-button:not(.primary) {grid-row:2;}
+      .history-label {font-size:13px;}
+      .pokemon-card > .speak-button {width:100%;margin-top:14px;}
+      /* Forms get one wide row each instead of tiny two-column buttons. */
+      .track.linear .variant-grid,.track.branching .variant-grid {grid-template-columns:minmax(0,1fr);}
+      .track.linear .variant-card,.track.branching .variant-card {
+        display:grid;grid-template-columns:70px minmax(0,1fr);
+        align-items:center;gap:10px;text-align:left;
+      }
+      .track.linear .artwork-small,.track.branching .artwork-small {margin-inline:0;}
+      .track.linear .variant-card .type-list,.track.branching .variant-card .type-list {justify-content:flex-start;}
+      .variant-card > .speak-button {grid-column:1/-1;}
+      .speak-button.speak-small {flex-direction:row;gap:10px;min-height:78px;padding:10px;font-size:18px;}
+      .speak-button.speak-small .speak-icon {font-size:27px;}
+      .variant-card {padding:10px;}
+      .theme-toggle {width:52px;height:52px;min-width:52px;min-height:52px;}
+      .search-go {min-height:56px;}
+    }
+    @media (max-width:390px) {
+      .family-nav-buttons {gap:13px;}
+      .family-nav-button {min-height:67px;padding:14px 10px;font-size:18px;}
+      .family-nav-button.primary {min-height:84px;font-size:19px;}
+      .theme-toggle {width:50px;height:50px;min-width:50px;min-height:50px;}
+      .top-status {max-width:82px;font-size:9px;padding:7px;}
+      .search-form {flex-wrap:wrap;padding:9px 10px;gap:8px;}
+      .search-input {min-height:45px;font-size:14px;}
+      .search-go {width:100%;min-height:60px;font-size:17px;}
+      .variant-card > .speak-button {width:100%;}
+    }
   </style>
 </head>
 <body>
@@ -1106,8 +1184,11 @@
     function speakButton(name, small = false) {
       const button = createElement('button',small ? 'speak-button speak-small':'speak-button');
       button.type='button';
-      button.textContent = small ? '♪ Hear' : '♫ Pronounce';
-      button.setAttribute('aria-label','Pronounce '+name);
+      const icon = createElement('span','speak-icon','🔊');
+      icon.setAttribute('aria-hidden','true');
+      button.appendChild(icon);
+      button.appendChild(createElement('span','speak-label',small ? 'Listen' : 'Hear name'));
+      button.setAttribute('aria-label','Hear how to pronounce '+name);
       button.title = speechEnabled ? 'Hear '+name+' (computer-generated pronunciation)' : 'Your browser does not support speech';
       if (!speechEnabled) button.disabled = true;
       button.addEventListener('click',() => speak(name));
@@ -1174,8 +1255,9 @@
       text.appendChild(createElement('h4','',variant.name));
       text.appendChild(makeTypeBadges(variant.types));
       if (variant.key === matchedKey) text.appendChild(createElement('span','search-match-pill','Your search'));
-      text.appendChild(speakButton(variant.name,true));
       card.appendChild(text);
+      // Keep the whole row clickable instead of squeezing it next to the form name.
+      card.appendChild(speakButton(variant.name,true));
       return card;
     }
     function variantGroup(entries, title, matchedKey) {
@@ -1231,9 +1313,10 @@
           pokemon.id === 866 ? 'Galarian Mr. Mime' : displayName(family.byId.get(pokemon.parentId).name);
         copy.appendChild(createElement('div','parent-note','↳ from '+evolvedFrom));
       }
-      copy.appendChild(speakButton(name));
       primary.appendChild(copy);
       card.appendChild(primary);
+      // A full-width button underneath the card is easier for young children to tap.
+      card.appendChild(speakButton(name));
       const variants=variantsFor(pokemon.id);
       const ordinary=variants.filter(form=>form.kind!=='mega');
       const megas=variants.filter(form=>form.kind==='mega');
