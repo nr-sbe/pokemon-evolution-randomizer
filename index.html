@@ -559,6 +559,78 @@
       .search-go {width:100%;min-height:60px;font-size:17px;}
       .variant-card > .speak-button {width:100%;}
     }
+
+    /* Larger, tap-to-zoom artwork previews: show the Pokémon clearly before opening it. */
+    .track.linear .pokemon-primary > .artwork,
+    .track.branching .pokemon-primary > .artwork {aspect-ratio:1 / 1;}
+    .track.linear .pokemon-primary > .artwork img {max-height:295px;}
+    .track.branching .cards {
+      grid-template-columns:repeat(auto-fit,minmax(200px,260px));
+      gap:18px;max-width:1000px;
+    }
+    .track.branching .cards.single-card {grid-template-columns:minmax(0,280px);}
+    .track.branching .pokemon-primary > .artwork img {max-height:250px;}
+    .legendary-track.single-legend .stage-block {width:min(100%,480px);}
+    .legendary-track.single-legend .pokemon-primary > .artwork img {max-height:345px;}
+    .artwork.artwork-small {width:122px;height:132px;}
+    .artwork.artwork-small img {max-height:130px;}
+    .variant-grid {gap:12px;}
+    .variant-card {gap:12px;}
+
+    @media (max-width:890px) {
+      .artwork.artwork-small {width:112px;height:124px;}
+      .artwork.artwork-small img {max-height:122px;}
+    }
+    @media (min-width:681px) and (max-width:1020px) {
+      /* A roomy picture-and-name layout replaces tiny three-column previews on tablets. */
+      .track.linear:not(.single-legend) {display:flex;flex-direction:column;gap:42px;}
+      .track.linear:not(.single-legend) .stage-block:not(:last-child)::after {
+        content:"↓";top:auto;bottom:-38px;left:50%;right:auto;
+        transform:translateX(-50%);font-size:25px;
+      }
+      .track.linear:not(.single-legend) .pokemon-primary {
+        display:grid;grid-template-columns:minmax(235px,36%) minmax(0,1fr);
+        align-items:center;gap:18px;
+      }
+      .track.linear:not(.single-legend) .pokemon-primary > .artwork img {max-height:310px;}
+      .artwork.artwork-small {width:145px;height:155px;}
+      .artwork.artwork-small img {max-height:153px;}
+    }
+    @media (max-width:680px) {
+      /* Keep each main image big instead of squeezing it beside the text. */
+      .track.linear .pokemon-primary {display:flex;flex-direction:column;align-items:stretch;gap:12px;}
+      .track.linear .pokemon-primary > .artwork,
+      .track.branching .pokemon-primary > .artwork {
+        width:100%;max-width:350px;margin-inline:auto;aspect-ratio:1 / 1;
+      }
+      .track.linear .pokemon-primary > .artwork img,
+      .track.branching .pokemon-primary > .artwork img,
+      .legendary-track.single-legend .pokemon-primary > .artwork img {max-height:315px;}
+      .track.linear .pokemon-copy {padding:0 7px 5px;}
+      /* One roomy branching card per row makes the character recognizable on phones. */
+      .track.branching .cards,
+      .track.branching .cards.single-card {
+        grid-template-columns:minmax(0,1fr);gap:19px;max-width:420px;margin-inline:auto;
+      }
+      /* Bigger artwork on each alternate-form and Mega card, too. */
+      .track.linear .variant-card,
+      .track.branching .variant-card {
+        grid-template-columns:clamp(100px,31vw,140px) minmax(0,1fr);
+        gap:11px;
+      }
+      .track.linear .artwork.artwork-small,
+      .track.branching .artwork.artwork-small {width:100%;height:auto;aspect-ratio:1 / 1;max-height:155px;}
+      .track.linear .artwork.artwork-small img,
+      .track.branching .artwork.artwork-small img {max-height:155px;}
+      .track.branching .pokemon-copy {padding:8px 7px 4px;}
+    }
+    @media (max-width:390px) {
+      .track.linear .pokemon-primary {gap:9px;}
+      .track.linear .pokemon-primary > .artwork,
+      .track.branching .pokemon-primary > .artwork {max-width:300px;}
+      .track.linear .variant-card,
+      .track.branching .variant-card {grid-template-columns:100px minmax(0,1fr);gap:9px;}
+    }
   </style>
 </head>
 <body>
